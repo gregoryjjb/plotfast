@@ -1,0 +1,23 @@
+{
+  "name": "plotfast",
+  "version": "0.0.0",
+  "description": "High performance plotting",
+  "main": "src/index.js",
+  "author": "Greg Brisebois",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "develop": "webpack --watch --mode development",
+    "build": "webpack --mode production"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0"
+  },
+  "dependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "babel-loader": "^8.0.0"
+  }
+}
