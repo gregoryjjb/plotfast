@@ -19,22 +19,67 @@ class Viewport {
 		
 	}
 	
-	screenToDataSpace = ({ x, y }) => {
+	_getPosition = () => {
 		return {
-			x: (x + this.xPos) * this.xScale,
-			y: (y + this.yPos) * this.yScale,
+			x: this.xPos - this.plot.interaction.panDelta.x,
+			y: this.yPos - this.plot.interaction.panDelta.y,
+		}
+	}
+	
+	screenToDataSpace = ({ x, y }) => {
+		const pos = this._getPosition();
+		
+		return {
+			x: (x + pos.x) * this.xScale,
+			y: (y + pos.y) * this.yScale,
 		}
 	}
 	
 	dataToScreenSpace = ({ x, y }) => {
+		const pos = this._getPosition();
+		
 		return {
-			x: (x / this.xScale) - this.xPos,
-			y: (y / this.yScale) - this.yPos,
+			x: (x / this.xScale) - pos.x,
+			y: (y / this.yScale) - pos.y,
 		}
 	}
 	
+	addPan = ({ x, y }) => {
+		this.xPos -= x;
+		this.yPos -= y;
+	}
+	
+	fit = () => {
+		if(!Array.isArray(this.plot.data)) return;
+		if(!this.plot.canvas) return;
+		
+		const { data } = this.plot;
+		
+		let maxX = this.plot.data.length;
+		let maxY = 0;
+		let minY = Number.MAX_VALUE;
+		
+		for(let i = 0; i < data.length; i++) {
+			let d = data[i].y;
+			if(d > maxY) maxY = d;
+			if(d < minY) minY = d;
+		}
+		
+		console.log('Max', maxY)
+		
+		this.xScale = maxX / this.plot.canvas.width;
+		this.yScale = (maxY - minY) / this.plot.canvas.height;
+		this.xPos = 0;
+		this.yPos = this.dataToScreenSpace({ x: 0, y: minY }).y;
+		
+		console.log('Y', this.yPos)
+	}
+	
+	start = () => {
+		requestAnimationFrame(this.render);
+	}
+	
 	render = () => {
-		console.log('Rendering')
 		const { data, canvas } = this.plot;
 		
 		if(!data || !canvas || !canvas.getContext) return;
@@ -42,21 +87,23 @@ class Viewport {
 		const ctx = canvas.getContext('2d');
 		const zero = this.dataToScreenSpace({ x: 0, y: 0 });
 		
+		// Clear
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		
+		// Start line graph
 		ctx.beginPath();
 		ctx.moveTo(zero.x, zero.y);
 		
+		// Draw lines to points
 		data.map(d => {
-			
 			let ssd = this.dataToScreenSpace(d);
-			console.log('Drawing', ssd)
-			//ctx.fillRect(ssd.x, ssd.y, 5, 5);
 			ctx.lineTo(ssd.x, ssd.y);
 		})
 		
 		ctx.stroke();
 		
-		//ctx.fillStyle = 'orange'
-		//ctx.fillRect(5, 5, 100, 100);
+		// Next frame
+		requestAnimationFrame(this.render);
 	}
 }
 

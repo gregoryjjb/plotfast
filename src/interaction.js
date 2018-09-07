@@ -3,9 +3,13 @@ class Interaction {
 	constructor(plot) {
 		this.plot = plot;
 		
-		this.dragging = false;
-		this.dragStart = 0;
-		this.dragDelta = 0;
+		this.draggingPan = false;
+		this.panDelta = { x: 0, y: 0 };
+		this.panStart = { x: 0, y: 0 };
+		
+		this.draggingZoom = false;
+		
+		this.dragStart = { x: 0, y: 0 };
 		
 		this.plot.canvas.addEventListener('mousedown', this.handleMouseDown);
 		this.plot.canvas.addEventListener('mouseup', this.handleMouseUp);
@@ -14,27 +18,49 @@ class Interaction {
 	}
 	
 	handleMouseDown = e => {
+		e.preventDefault();
+		
 		let x = e.layerX;
 		let y = e.layerY;
 		
-		this.dragging = true;
-		this.dragStart = x;
+		this.dragStart = { x, y };
+		
+		// Left click
+		if(e.button === 0) {
+			
+		}
+		
+		// Middle click
+		else if(e.button === 1) {
+			this.draggingPan = true;
+			this.panStart = { x, y };
+		}
 	}
 	
 	handleMouseUp = e => {
 		let x = e.layerX;
 		let y = e.layerY;
 		
-		this.offset += this.dragDelta;
-		this.dragging = false;
-		this.dragStart = 0;
-		this.dragDelta = 0;
-		
-		console.log('New offset:', this.offset);
+		if(this.draggingPan === true) {
+			this.draggingPan = false;
+			
+			console.log(this.panDelta);
+			this.plot.viewport.addPan(this.panDelta);
+			
+			this.panDelta = { x: 0, y: 0 };
+		}
 	}
 	
 	handleMouseMove = e => {
+		const x = e.layerX;
+		const y = e.layerY;
 		
+		if(this.draggingPan === true) {
+			this.panDelta = {
+				x: x - this.panStart.x,
+				y: y - this.panStart.y,
+			};
+		}
 	}
 
 	handleWheel = e => {
