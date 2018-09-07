@@ -10,6 +10,7 @@ class Interaction {
 		this.plot.canvas.addEventListener('mousedown', this.handleMouseDown);
 		this.plot.canvas.addEventListener('mouseup', this.handleMouseUp);
 		this.plot.canvas.addEventListener('mousemove', this.handleMouseMove);
+		this.plot.canvas.addEventListener('wheel', this.handleWheel);
 	}
 	
 	handleMouseDown = e => {
@@ -33,11 +34,14 @@ class Interaction {
 	}
 	
 	handleMouseMove = e => {
-		if(this.dragging) {
-			this.dragDelta = e.layerX - this.dragStart;
-			console.log('Delta:', this.dragDelta);
-		}
 		
-		this.render();
+	}
+
+	handleWheel = e => {
+		e.preventDefault();
+
+		console.log("Scrolled", e.deltaY);
 	}
 }
+
+export default Interaction;

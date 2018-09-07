@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = (env, argv) => ({
 	module: {
 		rules: [
 			{
@@ -12,5 +12,10 @@ module.exports = {
 	},
 	output: {
 		library: 'Plotfast',
+	},
+	devServer: {
+		historyApiFallback: {
+			index: 'index.html'
+		}
 	}
-}
+})

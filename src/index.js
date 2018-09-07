@@ -1,3 +1,3 @@
-import Plotfast from './Plotfast';
+const Plotfast = require('./Plotfast').default;
 
 module.exports = Plotfast;

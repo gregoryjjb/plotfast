@@ -7,8 +7,8 @@ class Viewport {
 		this.yPos = 0;
 		
 		// Pixels per axis unit
-		this.xScale = 20;
-		this.yScale = 20;
+		this.xScale = 1 / 100;
+		this.yScale = 1 / 100;
 	}
 	
 	pixelsToAxis = (x, y) => {
@@ -43,10 +43,13 @@ class Viewport {
 		data.map(d => {
 			
 			let ssd = this.dataToScreenSpace(d);
-			
+			console.log('Drawing', ssd)
 			ctx.fillRect(ssd.x, ssd.y, 5, 5);
 		})
 		
-		ctx.fillRect(5, 5, 100, 100);
+		//ctx.fillStyle = 'orange'
+		//ctx.fillRect(5, 5, 100, 100);
 	}
 }
+
+export default Viewport;

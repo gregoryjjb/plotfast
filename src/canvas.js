@@ -2,11 +2,11 @@
 export default function canvas(el, width, height) {
 	
 	const c = document.createElement('canvas');
-	c.width = width;
-	c.height = height;
+	c.width = width || 640;
+	c.height = height || 480;
 	
-	if(containerEl && containerEl.nodeType) {
-		containerEl.appendChild(this.canvas);
+	if(el && el.nodeType) {
+		el.appendChild(c);
 	}
 	
 	return c;
