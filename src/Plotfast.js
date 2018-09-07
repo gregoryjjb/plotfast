@@ -12,7 +12,7 @@ class Plotfast {
 		plot.viewport = new Viewport(plot);
 		plot.interaction = new Interaction(plot);
 		
-		plot.data = [{x: 1, y: 1}, {x: 2, y: 0}, {x: 3, y: 2}];
+		plot.data = this.generateData(); // [{x: 1, y: 1}, {x: 2, y: 0}, {x: 3, y: 2}];
 		
 		plot.viewport.render();
 	}
@@ -25,8 +25,8 @@ class Plotfast {
 				y: Math.round((Math.random() - 0.5) * 10 + data[i - 1].y),
 			});
 		}
-		
-		this.data = data;
+		console.log('Generating data')
+		return data;
 	}
 	
 	render() {
