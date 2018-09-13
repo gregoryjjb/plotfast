@@ -5,6 +5,18 @@ class Viewport {
 		
 		this.xPos = 0;
 		this.yPos = -100;
+
+		this.startX = 0;
+		this.endX = 20;
+
+		this.startY = 0;
+		this.endY = 20;
+
+		this.paddingLeft = 30;
+		this.paddingRight = 30;
+
+		this.paddingTop = 30;
+		this.paddingBottom = 30;
 		
 		// Pixels per axis unit
 		this.xScale = 1;
@@ -18,32 +30,35 @@ class Viewport {
 	axisToPixels = (x, y) => {
 		
 	}
+
+	_getPlotWidth = () => this.plot.canvas.width - this.paddingLeft - this.paddingRight;
+	_getPlotHeight = () => this.plot.canvas.height - this.paddingTop - this.paddingBottom;
+
+	_dataToScreen = (d, dMin, dMax, sMin, sMax) => (d - dMin) * ((sMax - sMin) / (dMax - dMin)) + sMin;
+
+	dataToScreenX = (d) => this._dataToScreen(d, this.startX, this.endX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
+	dataToScreenY = (d) => this._dataToScreen(d, this.startY, this.endY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
 	
-	_getPosition = () => {
-		return {
-			x: this.xPos - this.plot.interaction.panDelta.x,
-			y: this.yPos - this.plot.interaction.panDelta.y,
-		}
+	_screenToData = (s, dMin, dMax, sMin, sMax) => (s - sMin) * ((dMax - dMin) / (sMax - sMin)) + dMin;
+
+	screenToDataX = (s) => this._screenToData(s, this.startX, this.endX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
+	screenToDataY = (s) => this._screenToData(s, this.startY, this.endY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
+
+	zoomToScreenCoords = (sStartX, sStartY, sEndX, sEndY) => {
+		let x1 = this.screenToDataX(sStartX);
+		let y1 = this.screenToDataY(sStartY);
+		let x2 = this.screenToDataX(sEndX);
+		let y2 = this.screenToDataY(sEndY);
+
+		this.startX = Math.min(x1, x2);
+		this.endX = Math.max(x1, x2);
+
+		this.startY = Math.min(y1, y2);
+		this.endY = Math.max(y1, y2);
+
+		console.log(`New positions x1: ${this.startX}, y1: ${this.startY}, x2: ${this.endX}, y2: ${this.endY}`);
 	}
-	
-	screenToDataSpace = ({ x, y }) => {
-		const pos = this._getPosition();
-		
-		return {
-			x: (x + pos.x) * this.xScale,
-			y: (y + pos.y) * this.yScale,
-		}
-	}
-	
-	dataToScreenSpace = ({ x, y }) => {
-		const pos = this._getPosition();
-		
-		return {
-			x: (x / this.xScale) - pos.x,
-			y: (y / this.yScale) - pos.y,
-		}
-	}
-	
+
 	addPan = ({ x, y }) => {
 		this.xPos -= x;
 		this.yPos -= y;
@@ -85,12 +100,49 @@ class Viewport {
 		if(!data || !canvas || !canvas.getContext) return;
 		
 		const ctx = canvas.getContext('2d');
-		const zero = this.dataToScreenSpace({ x: 0, y: 0 });
+		//const zero = this.dataToScreenSpace({ x: 0, y: 0 });
 		
 		// Clear
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
+		// Draw bounds around graph area (temporary?)
 		ctx.strokeStyle = 'lightgrey';
+		ctx.lineWidth = "1";
+		ctx.setLineDash([]);
+		ctx.strokeRect(
+			this.paddingLeft - 0.5,
+			this.paddingTop - 0.5,
+			this._getPlotWidth() + 0.5,
+			this._getPlotHeight() + 0.5,
+		);
+
+		// Draw zoom box (if dragging zoom)
+		if(this.plot.interaction.draggingZoom === true) {
+			
+			let i = this.plot.interaction;
+
+			ctx.setLineDash([5, 10]);
+			ctx.strokeRect(
+				i.zoomStartX,
+				i.zoomStartY,
+				i.zoomDeltaX,
+				i.zoomDeltaY,
+			);
+		}
+
+		let x1 = this.dataToScreenX(0.5);
+		let y1 = this.dataToScreenY(0.5);
+
+		let x2 = this.dataToScreenX(10);
+		let y2 = this.dataToScreenY(10);
+
+		ctx.fillStyle = 'red';
+		ctx.fillRect(x1, y1, 2, 2);
+
+		ctx.fillStyle = 'blue';
+		ctx.fillRect(x2, y2, 2, 2);
+
+		/*ctx.strokeStyle = 'lightgrey';
 		
 		//  Draw x axis
 		ctx.beginPath();
@@ -116,7 +168,7 @@ class Viewport {
 			ctx.lineTo(ssd.x, ssd.y);
 		})
 		
-		ctx.stroke();
+		ctx.stroke();*/
 		
 		// Next frame
 		requestAnimationFrame(this.render);

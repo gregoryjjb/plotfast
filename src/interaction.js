@@ -8,6 +8,10 @@ class Interaction {
 		this.panStart = { x: 0, y: 0 };
 		
 		this.draggingZoom = false;
+		this.zoomStartX = 0;
+		this.zoomStartY = 0;
+		this.zoomDeltaX = 0;
+		this.zoomDeltaY = 0;
 		
 		this.dragStart = { x: 0, y: 0 };
 		
@@ -15,6 +19,7 @@ class Interaction {
 		this.plot.canvas.addEventListener('mouseup', this.handleMouseUp);
 		this.plot.canvas.addEventListener('mousemove', this.handleMouseMove);
 		this.plot.canvas.addEventListener('wheel', this.handleWheel);
+		this.plot.canvas.addEventListener('keydown', this.handleKeydown);
 	}
 	
 	handleMouseDown = e => {
@@ -27,7 +32,9 @@ class Interaction {
 		
 		// Left click
 		if(e.button === 0) {
-			
+			this.draggingZoom = true;
+			this.zoomStartX = x;
+			this.zoomStartY = y;
 		}
 		
 		// Middle click
@@ -45,9 +52,25 @@ class Interaction {
 			this.draggingPan = false;
 			
 			console.log(this.panDelta);
-			this.plot.viewport.addPan(this.panDelta);
+			//this.plot.viewport.addPan(this.panDelta);
 			
 			this.panDelta = { x: 0, y: 0 };
+		}
+
+		if(this.draggingZoom === true) {
+			this.draggingZoom = false;
+
+			let x1 = this.zoomStartX;
+			let x2 = x1 + this.zoomDeltaX;
+			let y1 = this.zoomStartY;
+			let y2 = y1 + this.zoomDeltaY;
+
+			this.plot.viewport.zoomToScreenCoords(x1, y1, x2, y2);
+
+			this.zoomStartX = 0;
+			this.zoomStartY = 0;
+			this.zoomDeltaX = 0;
+			this.zoomDeltaY = 0;
 		}
 	}
 	
@@ -61,12 +84,22 @@ class Interaction {
 				y: y - this.panStart.y,
 			};
 		}
+
+		if(this.draggingZoom === true) {
+			this.zoomDeltaX = x - this.zoomStartX;
+			this.zoomDeltaY = y - this.zoomStartY;
+		}
 	}
 
 	handleWheel = e => {
 		e.preventDefault();
 
 		console.log("Scrolled", e.deltaY);
+	}
+
+	handleKeydown = e => {
+		console.log('Key pressed')
+		console.log(e)
 	}
 }
 
