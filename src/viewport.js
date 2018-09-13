@@ -70,7 +70,7 @@ class Viewport {
 		this.xScale = maxX / this.plot.canvas.width;
 		this.yScale = (maxY - minY) / this.plot.canvas.height;
 		this.xPos = 0;
-		this.yPos = this.dataToScreenSpace({ x: 0, y: minY }).y;
+		this.yPos = minY / this.yScale;
 		
 		console.log('Y', this.yPos)
 	}
@@ -89,6 +89,22 @@ class Viewport {
 		
 		// Clear
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		
+		ctx.strokeStyle = 'lightgrey';
+		
+		//  Draw x axis
+		ctx.beginPath();
+		ctx.moveTo(0, zero.y);
+		ctx.lineTo(canvas.width, zero.y);
+		ctx.stroke();
+		
+		// Draw y axis
+		ctx.beginPath();
+		ctx.moveTo(zero.x, 0);
+		ctx.lineTo(zero.x, canvas.height);
+		ctx.stroke();
+		
+		ctx.strokeStyle = 'black';
 		
 		// Start line graph
 		ctx.beginPath();
