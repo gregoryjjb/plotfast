@@ -22,14 +22,6 @@ class Viewport {
 		this.xScale = 1;
 		this.yScale = 1;
 	}
-	
-	pixelsToAxis = (x, y) => {
-		
-	}
-	
-	axisToPixels = (x, y) => {
-		
-	}
 
 	_getPlotWidth = () => this.plot.canvas.width - this.paddingLeft - this.paddingRight;
 	_getPlotHeight = () => this.plot.canvas.height - this.paddingTop - this.paddingBottom;
@@ -127,7 +119,8 @@ class Viewport {
 		if(!data || !canvas || !canvas.getContext) return;
 		
 		const ctx = canvas.getContext('2d');
-		//const zero = this.dataToScreenSpace({ x: 0, y: 0 });
+		const zeroX = this.dataToScreenX(0);
+		const zeroY = this.dataToScreenY(0);
 		
 		// Clear
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -169,33 +162,35 @@ class Viewport {
 		ctx.fillStyle = 'blue';
 		ctx.fillRect(x2, y2, 2, 2);
 
-		/*ctx.strokeStyle = 'lightgrey';
+		ctx.strokeStyle = 'lightgrey';
 		
 		//  Draw x axis
 		ctx.beginPath();
-		ctx.moveTo(0, zero.y);
-		ctx.lineTo(canvas.width, zero.y);
+		ctx.moveTo(0, zeroY);
+		ctx.lineTo(canvas.width, zeroY);
 		ctx.stroke();
 		
 		// Draw y axis
 		ctx.beginPath();
-		ctx.moveTo(zero.x, 0);
-		ctx.lineTo(zero.x, canvas.height);
+		ctx.moveTo(zeroX, 0);
+		ctx.lineTo(zeroX, canvas.height);
 		ctx.stroke();
 		
 		ctx.strokeStyle = 'black';
 		
 		// Start line graph
 		ctx.beginPath();
-		ctx.moveTo(zero.x, zero.y);
+		ctx.moveTo(zeroX, zeroY);
 		
 		// Draw lines to points
 		data.map(d => {
-			let ssd = this.dataToScreenSpace(d);
-			ctx.lineTo(ssd.x, ssd.y);
+			//let ssd = this.dataToScreenSpace(d);
+			let dx = this.dataToScreenX(d.x);
+			let dy = this.dataToScreenY(d.y);
+			ctx.lineTo(dx, dy);
 		})
 		
-		ctx.stroke();*/
+		ctx.stroke();
 		
 		// Next frame
 		requestAnimationFrame(this.render);
