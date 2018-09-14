@@ -19,7 +19,7 @@ class Interaction {
 		this.plot.canvas.addEventListener('mouseup', this.handleMouseUp);
 		this.plot.canvas.addEventListener('mousemove', this.handleMouseMove);
 		this.plot.canvas.addEventListener('wheel', this.handleWheel);
-		this.plot.canvas.addEventListener('keydown', this.handleKeydown);
+		window.addEventListener('keydown', this.handleKeydown);
 	}
 	
 	handleMouseDown = e => {
@@ -100,6 +100,14 @@ class Interaction {
 	handleKeydown = e => {
 		console.log('Key pressed')
 		console.log(e)
+
+		if(e.key === 'Escape') {
+			this.draggingZoom = false;
+			this.zoomStartX = 0;
+			this.zoomStartY = 0;
+			this.zoomDeltaX = 0;
+			this.zoomDeltaY = 0;
+		}
 	}
 }
 
