@@ -95,6 +95,16 @@ class Interaction {
 		e.preventDefault();
 
 		console.log("Scrolled", e.deltaY);
+		
+		// Zoom in
+		if(e.deltaY < 0) {
+			this.plot.viewport.zoom(0.5, e.layerX, e.layerY);
+		}
+		
+		// Zoom out
+		else {
+			this.plot.viewport.zoom(2, e.layerX, e.layerY);
+		}
 	}
 
 	handleKeydown = e => {

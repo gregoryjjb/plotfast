@@ -58,6 +58,33 @@ class Viewport {
 
 		console.log(`New positions x1: ${this.startX}, y1: ${this.startY}, x2: ${this.endX}, y2: ${this.endY}`);
 	}
+	
+	zoom = (amount, screenX, screenY) => {
+		
+		let anchorX = this.screenToDataX(screenX);
+		let anchorY = this.screenToDataY(screenY);
+		
+		let anchorLeft = (anchorX - this.startX) * amount;
+		let anchorRight = (this.endX - anchorX) * amount;
+		
+		let anchorBottom = (anchorY - this.startY) * amount;
+		let anchorTop = (this.endY - anchorY) * amount;
+		
+		// pmin2 = p - (pmax - pmin) / 4, pmax2 = p + (pmax - pmin) / 4
+		let halfX = (this.endX - this.startX) * amount;
+		let halfY = (this.endY - this.startY) * amount;
+		
+		this.startX = anchorX - anchorLeft;
+		this.endX = anchorX + anchorRight;
+		
+		this.startY = anchorY - anchorBottom;
+		this.endY = anchorY + anchorTop;
+		
+		//this.startX = centerX - halfX;
+		//this.endX = centerX + halfX;
+		//this.startY = centerY - halfY;
+		//this.endY = centerY + halfY;
+	}
 
 	addPan = ({ x, y }) => {
 		this.xPos -= x;
