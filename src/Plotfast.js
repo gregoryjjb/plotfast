@@ -12,7 +12,7 @@ class Plotfast {
 		plot.viewport = new Viewport(plot);
 		plot.interaction = new Interaction(plot);
 		
-		plot.data = this.generateData(1000); // [{x: 1, y: 1}, {x: 2, y: 0}, {x: 3, y: 2}];
+		plot.data = this.generateData(1000000); // [{x: 1, y: 1}, {x: 2, y: 0}, {x: 3, y: 2}];
 		
 		plot.viewport.fit();
 		plot.viewport.start();

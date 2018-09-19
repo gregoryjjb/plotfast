@@ -26,9 +26,11 @@ class Viewport {
 		this.paddingTop = 30;
 		this.paddingBottom = 30;
 		
-		// Pixels per axis unit
-		this.xScale = 1;
-		this.yScale = 1;
+		// DEFNINTELY don't set these directly
+		this._scaleX = 0;
+		this._scaelY = 0;
+		
+		this._BENCH = [];
 	}
 	
 	_updateCalculations = () => {
@@ -36,6 +38,9 @@ class Viewport {
 		this._maxX = this.endX + this._offsetX;
 		this._minY = this.startY + this._offsetY;
 		this._maxY = this.endY + this._offsetY;
+		
+		this._scaleX = (this.endX - this.startX) / this._getPlotWidth();
+		this._scaleY = (this.endY - this.startY) / this._getPlotHeight();
 	}
 	
 	setOffset = (x, y) => {
@@ -57,15 +62,20 @@ class Viewport {
 	_getPlotHeight = () => this.plot.canvas.height - this.paddingTop - this.paddingBottom;
 
 	_dataToScreen = (d, dMin, dMax, sMin, sMax) => (d - dMin) * ((sMax - sMin) / (dMax - dMin)) + sMin;
-
-	dataToScreenX = (d) => this._dataToScreen(d, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
-	dataToScreenY = (d) => this._dataToScreen(d, this._minY, this._maxY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
-	
 	_screenToData = (s, dMin, dMax, sMin, sMax) => (s - sMin) * ((dMax - dMin) / (sMax - sMin)) + dMin;
 
-	screenToDataX = (s) => this._screenToData(s, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
-	screenToDataY = (s) => this._screenToData(s, this._minY, this._maxY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
-
+	dataToScreenX = (d) => (d - this._minX) / this._scaleX + this.paddingLeft;
+	dataToScreenY = (d) => (d - this._minY) / this._scaleY * -1 + this.paddingTop + this._getPlotHeight();
+	screenToDataX = (s) => (s - this.paddingLeft) * this._scaleX + this._minX; 
+	screenToDataY = (s) => (this.paddingTop + this._getPlotHeight() - s) * this._scaleY + this._minY;
+	
+	// Old (slower?) way
+	// Yep it's about 8% slower
+	//dataToScreenX = (d) => this._dataToScreen(d, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
+	//dataToScreenY = (d) => this._dataToScreen(d, this._minY, this._maxY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
+	//screenToDataX = (s) => this._screenToData(s, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
+	//screenToDataY = (s) => this._screenToData(s, this._minY, this._maxY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
+	
 	zoomToScreenCoords = (sStartX, sStartY, sEndX, sEndY) => {
 		let x1 = this.screenToDataX(sStartX);
 		let y1 = this.screenToDataY(sStartY);
@@ -133,10 +143,10 @@ class Viewport {
 		
 		console.log('Max', maxY)
 		
-		this.xScale = maxX / this.plot.canvas.width;
-		this.yScale = (maxY - minY) / this.plot.canvas.height;
-		this.xPos = 0;
-		this.yPos = minY / this.yScale;
+		//this.xScale = maxX / this.plot.canvas.width;
+		//this.yScale = (maxY - minY) / this.plot.canvas.height;
+		//this.xPos = 0;
+		//this.yPos = minY / this.yScale;
 		
 		console.log('Y', this.yPos)
 	}
@@ -147,9 +157,6 @@ class Viewport {
 	
 	render = () => {
 		this._updateCalculations();
-		
-		//console.log("Min X:", this._minX)
-		//console.log("Max X:", this._maxX)
 		
 		const { data, canvas } = this.plot;
 		
@@ -185,6 +192,7 @@ class Viewport {
 				i.zoomDeltaX,
 				i.zoomDeltaY,
 			);
+			ctx.setLineDash([]);
 		}
 
 		let x1 = this.dataToScreenX(0.5);
@@ -219,6 +227,8 @@ class Viewport {
 		ctx.beginPath();
 		ctx.moveTo(zeroX, zeroY);
 		
+		//let t0 = performance.now();
+		
 		// Draw lines to points
 		data.map(d => {
 			//let ssd = this.dataToScreenSpace(d);
@@ -226,6 +236,15 @@ class Viewport {
 			let dy = this.dataToScreenY(d.y);
 			ctx.lineTo(dx, dy);
 		})
+		
+		//let t1 = performance.now();
+		
+		//if(this._BENCH.length >= 30) {
+		//	let avg = this._BENCH.reduce((acc, el) => acc + el) / this._BENCH.length;
+		//	console.log("Average is", avg);
+		//	this._BENCH = [];
+		//}
+		//this._BENCH.push(t1 - t0);
 		
 		ctx.stroke();
 		
