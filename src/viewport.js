@@ -8,9 +8,17 @@ class Viewport {
 
 		this.startX = 0;
 		this.endX = 20;
-
 		this.startY = 0;
 		this.endY = 20;
+		
+		this._offsetX = 0;
+		this._offsetY = 0;
+		
+		// Don't set these directly
+		this._minX = 0;
+		this._maxX = 0;
+		this._minY = 0;
+		this._maxY = 0;
 
 		this.paddingLeft = 30;
 		this.paddingRight = 30;
@@ -22,25 +30,49 @@ class Viewport {
 		this.xScale = 1;
 		this.yScale = 1;
 	}
+	
+	_updateCalculations = () => {
+		this._minX = this.startX + this._offsetX;
+		this._maxX = this.endX + this._offsetX;
+		this._minY = this.startY + this._offsetY;
+		this._maxY = this.endY + this._offsetY;
+	}
+	
+	setOffset = (x, y) => {
+		this._offsetX = -x * ((this.endX - this.startX) / (this.paddingLeft - this.paddingLeft + this._getPlotWidth()));
+		this._offsetY = y * ((this.endY - this.startY) / this._getPlotHeight());
+	}
+	
+	applyOffset = () => {
+		this.startX += this._offsetX;
+		this.endX += this._offsetX;
+		this.startY += this._offsetY;
+		this.endY += this._offsetY;
+		
+		this._offsetX = 0;
+		this._offsetY = 0;
+	}
 
 	_getPlotWidth = () => this.plot.canvas.width - this.paddingLeft - this.paddingRight;
 	_getPlotHeight = () => this.plot.canvas.height - this.paddingTop - this.paddingBottom;
 
 	_dataToScreen = (d, dMin, dMax, sMin, sMax) => (d - dMin) * ((sMax - sMin) / (dMax - dMin)) + sMin;
 
-	dataToScreenX = (d) => this._dataToScreen(d, this.startX, this.endX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
-	dataToScreenY = (d) => this._dataToScreen(d, this.startY, this.endY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
+	dataToScreenX = (d) => this._dataToScreen(d, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
+	dataToScreenY = (d) => this._dataToScreen(d, this._minY, this._maxY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
 	
 	_screenToData = (s, dMin, dMax, sMin, sMax) => (s - sMin) * ((dMax - dMin) / (sMax - sMin)) + dMin;
 
-	screenToDataX = (s) => this._screenToData(s, this.startX, this.endX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
-	screenToDataY = (s) => this._screenToData(s, this.startY, this.endY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
+	screenToDataX = (s) => this._screenToData(s, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
+	screenToDataY = (s) => this._screenToData(s, this._minY, this._maxY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
 
 	zoomToScreenCoords = (sStartX, sStartY, sEndX, sEndY) => {
 		let x1 = this.screenToDataX(sStartX);
 		let y1 = this.screenToDataY(sStartY);
 		let x2 = this.screenToDataX(sEndX);
 		let y2 = this.screenToDataY(sEndY);
+		
+		console.log("X1 is", x1);
 
 		this.startX = Math.min(x1, x2);
 		this.endX = Math.max(x1, x2);
@@ -114,6 +146,11 @@ class Viewport {
 	}
 	
 	render = () => {
+		this._updateCalculations();
+		
+		//console.log("Min X:", this._minX)
+		//console.log("Max X:", this._maxX)
+		
 		const { data, canvas } = this.plot;
 		
 		if(!data || !canvas || !canvas.getContext) return;

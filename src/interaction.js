@@ -3,15 +3,17 @@ class Interaction {
 	constructor(plot) {
 		this.plot = plot;
 		
-		this.draggingPan = false;
-		this.panDelta = { x: 0, y: 0 };
-		this.panStart = { x: 0, y: 0 };
-		
 		this.draggingZoom = false;
 		this.zoomStartX = 0;
 		this.zoomStartY = 0;
 		this.zoomDeltaX = 0;
 		this.zoomDeltaY = 0;
+		
+		this.draggingPan = false;
+		this.panStartX = 0;
+		this.panStartY = 0;
+		this.panDeltaX = 0;
+		this.panDeltaY = 0;
 		
 		this.dragStart = { x: 0, y: 0 };
 		
@@ -40,7 +42,8 @@ class Interaction {
 		// Middle click
 		else if(e.button === 1) {
 			this.draggingPan = true;
-			this.panStart = { x, y };
+			this.panStartX = x;
+			this.panStartY = y;
 		}
 	}
 	
@@ -51,10 +54,12 @@ class Interaction {
 		if(this.draggingPan === true) {
 			this.draggingPan = false;
 			
-			console.log(this.panDelta);
-			//this.plot.viewport.addPan(this.panDelta);
+			this.plot.viewport.applyOffset();
 			
-			this.panDelta = { x: 0, y: 0 };
+			this.panStartX = 0;
+			this.panStartY = 0;
+			this.panDeltaX = 0;
+			this.panDeltaY = 0;
 		}
 
 		if(this.draggingZoom === true) {
@@ -79,10 +84,10 @@ class Interaction {
 		const y = e.layerY;
 		
 		if(this.draggingPan === true) {
-			this.panDelta = {
-				x: x - this.panStart.x,
-				y: y - this.panStart.y,
-			};
+			this.panDeltaX = x - this.panStartX;
+			this.panDeltaY = y - this.panStartY;
+			
+			this.plot.viewport.setOffset(this.panDeltaX, this.panDeltaY);
 		}
 
 		if(this.draggingZoom === true) {
