@@ -31,6 +31,8 @@ class Viewport {
 		this._scaelY = 0;
 		
 		this._BENCH = [];
+
+		window.FIT = this.fit;
 	}
 	
 	_updateCalculations = () => {
@@ -113,11 +115,6 @@ class Viewport {
 		
 		this.startY = anchorY - anchorBottom;
 		this.endY = anchorY + anchorTop;
-		
-		//this.startX = centerX - halfX;
-		//this.endX = centerX + halfX;
-		//this.startY = centerY - halfY;
-		//this.endY = centerY + halfY;
 	}
 
 	addPan = ({ x, y }) => {
@@ -140,15 +137,11 @@ class Viewport {
 			if(d > maxY) maxY = d;
 			if(d < minY) minY = d;
 		}
-		
-		console.log('Max', maxY)
-		
-		//this.xScale = maxX / this.plot.canvas.width;
-		//this.yScale = (maxY - minY) / this.plot.canvas.height;
-		//this.xPos = 0;
-		//this.yPos = minY / this.yScale;
-		
-		console.log('Y', this.yPos)
+
+		this.startX = 0;
+		this.endX = maxX;
+		this.startY = minY;
+		this.endY = maxY;
 	}
 	
 	start = () => {
