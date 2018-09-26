@@ -29,6 +29,8 @@ class Viewport {
 		// DEFNINTELY don't set these directly
 		this._scaleX = 0;
 		this._scaelY = 0;
+		this._plotWidth = 0;
+		this._plotHeight = 0;
 		
 		this._BENCH = [];
 
@@ -40,14 +42,17 @@ class Viewport {
 		this._maxX = this.endX + this._offsetX;
 		this._minY = this.startY + this._offsetY;
 		this._maxY = this.endY + this._offsetY;
+
+		this._plotWidth = this.plot.canvas.width - this.paddingLeft - this.paddingRight;
+		this._plotHeight = this.plot.canvas.height - this.paddingTop - this.paddingBottom;
 		
-		this._scaleX = (this.endX - this.startX) / this._getPlotWidth();
-		this._scaleY = (this.endY - this.startY) / this._getPlotHeight();
+		this._scaleX = (this.endX - this.startX) / this._plotWidth;
+		this._scaleY = (this.endY - this.startY) / this._plotHeight;
 	}
 	
 	setOffset = (x, y) => {
-		this._offsetX = -x * ((this.endX - this.startX) / (this.paddingLeft - this.paddingLeft + this._getPlotWidth()));
-		this._offsetY = y * ((this.endY - this.startY) / this._getPlotHeight());
+		this._offsetX = -x * ((this.endX - this.startX) / (this.paddingLeft - this.paddingLeft + this._plotWidth));
+		this._offsetY = y * ((this.endY - this.startY) / this._plotHeight);
 	}
 	
 	applyOffset = () => {
@@ -67,16 +72,16 @@ class Viewport {
 	_screenToData = (s, dMin, dMax, sMin, sMax) => (s - sMin) * ((dMax - dMin) / (sMax - sMin)) + dMin;
 
 	dataToScreenX = (d) => (d - this._minX) / this._scaleX + this.paddingLeft;
-	dataToScreenY = (d) => (d - this._minY) / this._scaleY * -1 + this.paddingTop + this._getPlotHeight();
+	dataToScreenY = (d) => (d - this._minY) / this._scaleY * -1 + this.paddingTop + this._plotHeight;
 	screenToDataX = (s) => (s - this.paddingLeft) * this._scaleX + this._minX; 
-	screenToDataY = (s) => (this.paddingTop + this._getPlotHeight() - s) * this._scaleY + this._minY;
+	screenToDataY = (s) => (this.paddingTop + this._plotHeight - s) * this._scaleY + this._minY;
 	
 	// Old (slower?) way
 	// Yep it's about 8% slower
-	//dataToScreenX = (d) => this._dataToScreen(d, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
-	//dataToScreenY = (d) => this._dataToScreen(d, this._minY, this._maxY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
-	//screenToDataX = (s) => this._screenToData(s, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._getPlotWidth());
-	//screenToDataY = (s) => this._screenToData(s, this._minY, this._maxY, this.paddingTop + this._getPlotHeight(), this.paddingTop);
+	//dataToScreenX = (d) => this._dataToScreen(d, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._plotWidth);
+	//dataToScreenY = (d) => this._dataToScreen(d, this._minY, this._maxY, this.paddingTop + this._plotHeight, this.paddingTop);
+	//screenToDataX = (s) => this._screenToData(s, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._plotWidth);
+	//screenToDataY = (s) => this._screenToData(s, this._minY, this._maxY, this.paddingTop + this._plotHeight, this.paddingTop);
 	
 	zoomToScreenCoords = (sStartX, sStartY, sEndX, sEndY) => {
 		let x1 = this.screenToDataX(sStartX);
@@ -169,8 +174,8 @@ class Viewport {
 		ctx.strokeRect(
 			this.paddingLeft - 0.5,
 			this.paddingTop - 0.5,
-			this._getPlotWidth() + 0.5,
-			this._getPlotHeight() + 0.5,
+			this._plotWidth + 0.5,
+			this._plotHeight + 0.5,
 		);
 
 		// Draw zoom box (if dragging zoom)
