@@ -3,6 +3,8 @@ class Interaction {
 	constructor(plot) {
 		this.plot = plot;
 		
+		this.zoomMultiplier = 0.75;
+		
 		this.draggingZoom = false;
 		this.zoomStartX = 0;
 		this.zoomStartY = 0;
@@ -98,17 +100,15 @@ class Interaction {
 
 	handleWheel = e => {
 		e.preventDefault();
-
-		console.log("Scrolled", e.deltaY);
 		
 		// Zoom in
 		if(e.deltaY < 0) {
-			this.plot.viewport.zoom(0.5, e.layerX, e.layerY);
+			this.plot.viewport.zoom(this.zoomMultiplier, e.layerX, e.layerY);
 		}
 		
 		// Zoom out
 		else {
-			this.plot.viewport.zoom(2, e.layerX, e.layerY);
+			this.plot.viewport.zoom(1 / this.zoomMultiplier, e.layerX, e.layerY);
 		}
 	}
 
