@@ -208,16 +208,20 @@ class Viewport {
 		ctx.strokeStyle = 'lightgrey';
 		
 		//  Draw x axis
-		ctx.beginPath();
-		ctx.moveTo(0, zeroY);
-		ctx.lineTo(canvas.width, zeroY);
-		ctx.stroke();
+		if(this._minY < 0 && this._maxY > 0) {
+			ctx.beginPath();
+			ctx.moveTo(this.paddingLeft, zeroY);
+			ctx.lineTo(this.paddingLeft + this._plotWidth, zeroY);
+			ctx.stroke();
+		}
 		
 		// Draw y axis
-		ctx.beginPath();
-		ctx.moveTo(zeroX, 0);
-		ctx.lineTo(zeroX, canvas.height);
-		ctx.stroke();
+		if(this._minX < 0 && this._maxX > 0) {
+			ctx.beginPath();
+			ctx.moveTo(zeroX, this.paddingTop);
+			ctx.lineTo(zeroX, this.paddingTop + this._plotHeight);
+			ctx.stroke();
+		}
 		
 		ctx.strokeStyle = 'black';
 		
@@ -228,7 +232,12 @@ class Viewport {
 		//let t0 = performance.now();
 		
 		// Draw lines to points
-		data.map(d => {
+		data.filter(d => (
+			d.x > this._minX &&
+			d.x < this._maxX &&
+			d.y > this._minY &&
+			d.y < this._maxY
+		)).map(d => {
 			//let ssd = this.dataToScreenSpace(d);
 			let dx = this.dataToScreenX(d.x);
 			let dy = this.dataToScreenY(d.y);
