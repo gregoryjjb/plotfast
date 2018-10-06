@@ -26,7 +26,7 @@ class Interaction {
 		
 		// Event listeners
 		this.plot.canvas.addEventListener('mousedown', this.handleMouseDown);
-		this.plot.canvas.addEventListener('mouseup', this.handleMouseUp);
+		window.addEventListener('mouseup', this.handleMouseUp);
 		this.plot.canvas.addEventListener('mousemove', this.handleMouseMove);
 		this.plot.canvas.addEventListener('wheel', this.handleWheel);
 		window.addEventListener('keydown', this.handleKeydown);
