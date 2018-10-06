@@ -111,8 +111,8 @@ class Interaction {
 		let x = e.layerX;
 		let y = e.layerY;
 		
-		// Left click
-		if(e.button === 0 && !this.shiftDown) {
+		// Left click with control
+		if(e.button === 0 && this.ctrlDown) {
 			this.startBoxZoom(x, y);
 		}
 		
