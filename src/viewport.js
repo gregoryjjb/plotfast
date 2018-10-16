@@ -1,3 +1,4 @@
+import utils from './utils';
 
 class Viewport {
 	constructor(plot) {
@@ -166,6 +167,32 @@ class Viewport {
 		
 		// Clear
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		
+		// Axis labels (todo)
+		let rangeX = this._maxX - this._minX;
+		let steps = 5;
+		let stepSizeRaw = Math.floor(rangeX / steps);
+		let num = utils.numDigits(stepSizeRaw);
+		let stepSize = utils.round(stepSizeRaw, num);
+		
+		//console.log("Step size", stepSize);
+		//console.log("Min X", this._minX);
+		//console.log("Rounded min X", utils.round(this._minX));
+		
+		let mx = this.dataToScreenX(utils.round(this._minX, num));
+		ctx.strokeStyle = 'blue';
+		ctx.beginPath();
+		ctx.moveTo(mx, canvas.height - 25);
+		ctx.lineTo(mx, canvas.height - 5);
+		ctx.stroke();
+		
+		for(let i = 1; i < steps; i++) {
+			let x = this.dataToScreenX(mx + stepSize * i);
+			ctx.beginPath();
+			ctx.moveTo(x, canvas.height - 25);
+			ctx.lineTo(x, canvas.height - 5);
+			ctx.stroke();
+		}
 		
 		// Draw bounds around graph area (temporary?)
 		ctx.strokeStyle = 'lightgrey';
