@@ -172,26 +172,31 @@ class Viewport {
 		let rangeX = this._maxX - this._minX;
 		let steps = 5;
 		let stepSizeRaw = Math.floor(rangeX / steps);
-		let num = utils.numDigits(stepSizeRaw);
-		let stepSize = utils.round(stepSizeRaw, num);
+		let stepSize = Number(stepSizeRaw.toPrecision(1))
+
+		let lenRange = utils.numDigits(Math.floor(rangeX));
+		let lenStep = utils.numDigits(stepSize);
+		let precisionStart = lenRange - lenStep + 1;
 		
-		//console.log("Step size", stepSize);
-		//console.log("Min X", this._minX);
-		//console.log("Rounded min X", utils.round(this._minX));
-		
-		let mx = this.dataToScreenX(utils.round(this._minX, num));
+		let leftmostX = this.screenToDataX(this.paddingLeft);
+		let roundedLeftmostX = Math.floor(leftmostX / stepSize) * stepSize;
+
+		let mx = roundedLeftmostX;
 		ctx.strokeStyle = 'blue';
-		ctx.beginPath();
-		ctx.moveTo(mx, canvas.height - 25);
-		ctx.lineTo(mx, canvas.height - 5);
-		ctx.stroke();
+
+		ctx.font = '16px sans-serif';
+		ctx.fillText(`Start: ${mx}; Step: ${stepSize};`, 10, 16);
 		
-		for(let i = 1; i < steps; i++) {
-			let x = this.dataToScreenX(mx + stepSize * i);
-			ctx.beginPath();
-			ctx.moveTo(x, canvas.height - 25);
-			ctx.lineTo(x, canvas.height - 5);
-			ctx.stroke();
+		for(let i = 0; i < steps + 1; i++) {
+			let dx = mx + stepSize * i;
+			let x = this.dataToScreenX(dx);
+			if(x >= this.paddingLeft && x <= canvas.width - this.paddingRight) {
+				ctx.beginPath();
+				ctx.moveTo(x, canvas.height - 25);
+				ctx.lineTo(x, canvas.height - 5);
+				ctx.stroke();
+				ctx.fillText(`${dx}`, x + 5, canvas.height - 5)
+			}
 		}
 		
 		// Draw bounds around graph area (temporary?)
