@@ -134,14 +134,14 @@ class Viewport {
 		
 		const { datasets } = this.plot;
 		
-		let maxX = datasets.map(s => s.length).reduce((a, b) => Math.max(a, b));
+		let maxX = datasets.map(({ data }) => data.length).reduce((a, b) => Math.max(a, b));
 		let maxY = 0;
 		let minY = Number.MAX_VALUE;
 
 		console.log("NEW MAX X", maxX)
 		
 		for(let j = 0; j < datasets.length; j++) {
-			let set = datasets[j];
+			let set = datasets[j].data;
 			for(let i = 0; i < set.length; i++) {
 				let d = set[i].y;
 				if(d > maxY) maxY = d;
@@ -262,9 +262,6 @@ class Viewport {
 		
 		ctx.strokeStyle = 'black';
 		
-		// Start line graph
-		ctx.beginPath();
-		
 		let t0;
 		let DEBUG = true;
 		
@@ -285,9 +282,14 @@ class Viewport {
 		let nPoints = 0;
 
 		for(let j = 0; j < datasets.length; j++) {
-			let data = datasets[j];
+			let set = datasets[j];
+			let data = set.data;
 			let inLine = false;
 
+			if(set.color) ctx.strokeStyle = set.color;
+			else ctx.strokeStyle = 'black';
+
+			ctx.beginPath();
 
 			for(let i = 0; i < data.length; i++) {
 				let d = data[i];
@@ -315,7 +317,7 @@ class Viewport {
 					inLine = false;
 				}
 			}
-			
+
 			ctx.stroke();
 		}
 

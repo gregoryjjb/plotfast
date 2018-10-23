@@ -13,11 +13,7 @@ class Plotfast {
 		plot.viewport = new Viewport(plot);
 		plot.interaction = new Interaction(plot);
 		
-		//plot.data = this.generateData(100000); // [{x: 1, y: 1}, {x: 2, y: 0}, {x: 3, y: 2}];
-
 		plot.datasets = [];
-		
-		//this.addDataset(this.generateData(100000));
 	}
 	
 	generateData(amount = 500) {
@@ -32,20 +28,23 @@ class Plotfast {
 		return data;
 	}
 
-	addDataset = (set) => {
-		if(!Array.isArray(set)) throw new Error("Dataset must be an array");
+	addDataset = (data, options) => {
+		if(!Array.isArray(data)) throw new Error("Dataset must be an array");
 
-		for(let i = 0; i < set.length; i++) {
+		for(let i = 0; i < data.length; i++) {
 			if(
-				set[i] === undefined ||
-				set[i].x === undefined ||
-				set[i].y === undefined
+				data[i] === undefined ||
+				data[i].x === undefined ||
+				data[i].y === undefined
 			) {
 				throw new Error("Elements of dataset must be objects of form {x, y}")
 			}
 		}
 
-		this.plot.datasets.push(set);
+		this.plot.datasets.push({
+			data,
+			...options,
+		});
 
 		console.log(this.plot.datasets);
 	}

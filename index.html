@@ -18,15 +18,25 @@
     <button id="generate">Generate Data</button>
     <button id="clear">Clear Data</button>
     <script>
+        // Credit to Anatoliy on Stackoverflow
+        // https://stackoverflow.com/a/1484514
+        function getRandomColor() {
+			var letters = '0123456789ABCDEF';
+			var color = '#';
+			for (var i = 0; i < 6; i++) {
+				color += letters[Math.floor(Math.random() * 16)];
+			}
+			return color;
+		}
+        
         var container = document.getElementById("container");
         var plot = new Plotfast(container);
         var data = plot.generateData(100000);
-        plot.addDataset(data);
+        plot.addDataset(data,  { color: getRandomColor() });
         plot.start();
 
         document.querySelector("#generate").addEventListener("click", function(e) {
-            //plot.removeDataset();
-            plot.addDataset(plot.generateData(100000))
+            plot.addDataset(plot.generateData(100000), { color: getRandomColor() })
             plot.fitViewToData();
         });
 
