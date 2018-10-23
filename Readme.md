@@ -19,8 +19,21 @@ Then, in your HTML:
 And initialize the plot in JS:
 
 ```javascript
+// Plot will be inserted into this div,
+// canvas creation handled automatically
 var container = document.getElementById("container");
+
+// Create the plot
 var plot = new Plotfast(container);
+
+// Generate 10k points of data
+var data = plot.generateData(10000);
+
+// Add the data to the plot
+plot.addDataset(data);
+
+// Start rendering the plot
+plot.start();
 ```
 
 ## Development
