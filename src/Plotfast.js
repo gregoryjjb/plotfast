@@ -51,7 +51,15 @@ class Plotfast {
 	}
 
 	removeDataset = index => {
-		if(index === undefined) this.plot.datasets = [];
+		if(index === undefined) {
+			this.plot.datasets = [];
+		}
+		else if(index >= this.plot.datasets.length || index < 0) {
+			throw new Error("Dataset index out of range");
+		}
+		else {
+			this.plot.datasets.splice(index, 1);
+		}
 	}
 	
 	render() {

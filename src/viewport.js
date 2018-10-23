@@ -134,14 +134,16 @@ class Viewport {
 		
 		const { datasets } = this.plot;
 		
-		let maxX = Math.max(datasets.map(s => s.length))
+		let maxX = datasets.map(s => s.length).reduce((a, b) => Math.max(a, b));
 		let maxY = 0;
 		let minY = Number.MAX_VALUE;
+
+		console.log("NEW MAX X", maxX)
 		
 		for(let j = 0; j < datasets.length; j++) {
-			let data = datasets[j];
-			for(let i = 0; i < data.length; i++) {
-				let d = data[i].y;
+			let set = datasets[j];
+			for(let i = 0; i < set.length; i++) {
+				let d = set[i].y;
 				if(d > maxY) maxY = d;
 				if(d < minY) minY = d;
 			}
@@ -279,12 +281,13 @@ class Viewport {
 			ctx.lineTo(dx, dy);
 		})*/
 
+		if(DEBUG) t0 = performance.now();
+		let nPoints = 0;
+
 		for(let j = 0; j < datasets.length; j++) {
 			let data = datasets[j];
-			let nPoints = 0;
 			let inLine = false;
 
-			if(DEBUG) t0 = performance.now();
 
 			for(let i = 0; i < data.length; i++) {
 				let d = data[i];
@@ -313,17 +316,17 @@ class Viewport {
 				}
 			}
 			
-			if(DEBUG) {
-				let t1 = performance.now();
-				if(this._BENCH.length >= 30) {
-					let avg = this._BENCH.reduce((acc, el) => acc + el) / this._BENCH.length;
-					console.log(`Drawing ${nPoints} points took %c${avg.toPrecision(3)}ms`, "color: blue;");
-					this._BENCH = [];
-				}
-				this._BENCH.push(t1 - t0);
-			}
-			
 			ctx.stroke();
+		}
+
+		if(DEBUG) {
+			let t1 = performance.now();
+			if(this._BENCH.length >= 30) {
+				let avg = this._BENCH.reduce((acc, el) => acc + el) / this._BENCH.length;
+				console.log(`Drawing ${nPoints} points took %c${avg.toPrecision(3)}ms`, "color: blue;");
+				this._BENCH = [];
+			}
+			this._BENCH.push(t1 - t0);
 		}
 		
 		// Next frame
