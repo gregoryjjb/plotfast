@@ -137,8 +137,6 @@ class Viewport {
 		let maxX = datasets.map(({ data }) => data.length).reduce((a, b) => Math.max(a, b));
 		let maxY = 0;
 		let minY = Number.MAX_VALUE;
-
-		console.log("NEW MAX X", maxX)
 		
 		for(let j = 0; j < datasets.length; j++) {
 			let set = datasets[j].data;
@@ -230,18 +228,7 @@ class Viewport {
 			ctx.setLineDash([]);
 		}
 
-		let x1 = this.dataToScreenX(0.5);
-		let y1 = this.dataToScreenY(0.5);
-
-		let x2 = this.dataToScreenX(10);
-		let y2 = this.dataToScreenY(10);
-
-		ctx.fillStyle = 'red';
-		ctx.fillRect(x1, y1, 2, 2);
-
-		ctx.fillStyle = 'blue';
-		ctx.fillRect(x2, y2, 2, 2);
-
+		// Axes
 		ctx.strokeStyle = 'lightgrey';
 		
 		//  Draw x axis
@@ -259,8 +246,6 @@ class Viewport {
 			ctx.lineTo(zeroX, this.paddingTop + this._plotHeight);
 			ctx.stroke();
 		}
-		
-		ctx.strokeStyle = 'black';
 		
 		let t0;
 		let DEBUG = true;
@@ -286,8 +271,7 @@ class Viewport {
 			let data = set.data;
 			let inLine = false;
 
-			if(set.color) ctx.strokeStyle = set.color;
-			else ctx.strokeStyle = 'black';
+			ctx.strokeStyle = set.color || 'black';
 
 			ctx.beginPath();
 
