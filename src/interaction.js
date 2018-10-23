@@ -125,6 +125,8 @@ class Interaction {
 		else if(e.button === 1) {
 			this.startPan(x, y);
 		}
+
+		this.updateCursor();
 	}
 	
 	handleMouseUp = e => {
@@ -138,6 +140,8 @@ class Interaction {
 		if(this.draggingZoom === true) {
 			this.finishBoxZoom(x, y);
 		}
+
+		this.updateCursor();
 	}
 	
 	handleMouseMove = e => {
@@ -165,6 +169,8 @@ class Interaction {
 		else {
 			this.plot.viewport.zoom(1 / this.zoomMultiplier, e.layerX, e.layerY);
 		}
+
+		this.updateCursor();
 	}
 
 	handleKeydown = e => {
@@ -183,6 +189,8 @@ class Interaction {
 		else if(k === 'f') {
 			this.plot.viewport.fit();
 		}
+
+		this.updateCursor();
 	}
 	
 	handleKeyup = e => {
@@ -194,6 +202,19 @@ class Interaction {
 		else if(k === 'Control') {
 			this.ctrlDown = false;
 		}
+
+		this.updateCursor();
+	}
+
+	updateCursor = () => {
+		let c = 'default';
+
+		if(this.draggingPan) c = 'grabbing';
+		else if(this.shiftDown) c = 'grab';
+		else if(this.ctrlDown) c = 'zoom-in';
+		else c = 'default';
+
+		this.plot.canvas.style.cursor = c;
 	}
 }
 
