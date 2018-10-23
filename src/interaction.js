@@ -168,9 +168,6 @@ class Interaction {
 	}
 
 	handleKeydown = e => {
-		console.log('Key pressed')
-		console.log(e)
-		
 		const k = e.key;
 
 		if(k === 'Escape') {

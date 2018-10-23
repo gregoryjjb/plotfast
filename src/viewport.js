@@ -129,19 +129,22 @@ class Viewport {
 	}
 	
 	fit = () => {
-		if(!Array.isArray(this.plot.data)) return;
+		if(!Array.isArray(this.plot.datasets)) return;
 		if(!this.plot.canvas) return;
 		
-		const { data } = this.plot;
+		const { datasets } = this.plot;
 		
-		let maxX = this.plot.data.length;
+		let maxX = Math.max(datasets.map(s => s.length))
 		let maxY = 0;
 		let minY = Number.MAX_VALUE;
 		
-		for(let i = 0; i < data.length; i++) {
-			let d = data[i].y;
-			if(d > maxY) maxY = d;
-			if(d < minY) minY = d;
+		for(let j = 0; j < datasets.length; j++) {
+			let data = datasets[j];
+			for(let i = 0; i < data.length; i++) {
+				let d = data[i].y;
+				if(d > maxY) maxY = d;
+				if(d < minY) minY = d;
+			}
 		}
 
 		this.startX = 0;
@@ -157,9 +160,9 @@ class Viewport {
 	render = () => {
 		this._updateCalculations();
 		
-		const { data, canvas } = this.plot;
+		const { data, datasets, canvas } = this.plot;
 		
-		if(!data || !canvas || !canvas.getContext) return;
+		if(!datasets || !canvas || !canvas.getContext) return;
 		
 		const ctx = canvas.getContext('2d');
 		const zeroX = this.dataToScreenX(0);
@@ -259,12 +262,12 @@ class Viewport {
 		
 		// Start line graph
 		ctx.beginPath();
-		ctx.moveTo(zeroX, zeroY);
 		
-		//let t0 = performance.now();
+		let t0;
+		let DEBUG = true;
 		
 		// Draw lines to points
-		data.filter(d => (
+		/*data.filter(d => (
 			d.x > this._minX &&
 			d.x < this._maxX &&
 			d.y > this._minY &&
@@ -274,18 +277,54 @@ class Viewport {
 			let dx = this.dataToScreenX(d.x);
 			let dy = this.dataToScreenY(d.y);
 			ctx.lineTo(dx, dy);
-		})
-		
-		//let t1 = performance.now();
-		
-		//if(this._BENCH.length >= 30) {
-		//	let avg = this._BENCH.reduce((acc, el) => acc + el) / this._BENCH.length;
-		//	console.log("Average is", avg);
-		//	this._BENCH = [];
-		//}
-		//this._BENCH.push(t1 - t0);
-		
-		ctx.stroke();
+		})*/
+
+		for(let j = 0; j < datasets.length; j++) {
+			let data = datasets[j];
+			let nPoints = 0;
+			let inLine = false;
+
+			if(DEBUG) t0 = performance.now();
+
+			for(let i = 0; i < data.length; i++) {
+				let d = data[i];
+
+				if(
+					d.x >= this._minX &&
+					d.x <= this._maxX &&
+					d.y >= this._minY &&
+					d.y <= this._maxY
+				) {
+					nPoints++;
+					
+					let dx = this.dataToScreenX(d.x);
+					let dy = this.dataToScreenY(d.y);
+					
+					if(inLine) {
+						ctx.lineTo(dx, dy);
+					}
+					else {
+						ctx.moveTo(dx, dy);
+						inLine = true;
+					}
+				}
+				else {
+					inLine = false;
+				}
+			}
+			
+			if(DEBUG) {
+				let t1 = performance.now();
+				if(this._BENCH.length >= 30) {
+					let avg = this._BENCH.reduce((acc, el) => acc + el) / this._BENCH.length;
+					console.log(`Drawing ${nPoints} points took %c${avg.toPrecision(3)}ms`, "color: blue;");
+					this._BENCH = [];
+				}
+				this._BENCH.push(t1 - t0);
+			}
+			
+			ctx.stroke();
+		}
 		
 		// Next frame
 		requestAnimationFrame(this.render);

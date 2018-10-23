@@ -15,9 +15,24 @@
         <li>Press F to fit</li>
     </ul>
     <div id="container" ></div>
+    <button id="generate">Generate Data</button>
+    <button id="clear">Clear Data</button>
     <script>
         var container = document.getElementById("container");
         var plot = new Plotfast(container);
+        var data = plot.generateData(100000);
+        plot.addDataset(data);
+        plot.start();
+
+        document.querySelector("#generate").addEventListener("click", function(e) {
+            plot.removeDataset();
+            plot.addDataset(plot.generateData(100000))
+            plot.fitViewToData();
+        });
+
+        document.querySelector("#clear").addEventListener("click", function(e) {
+            plot.removeDataset();
+        })
     </script>
 </body>
 </html>
