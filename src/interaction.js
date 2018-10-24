@@ -108,8 +108,10 @@ class Interaction {
 	handleMouseDown = e => {
 		e.preventDefault();
 		
-		let x = e.layerX;
-		let y = e.layerY;
+		let x = e.offsetX;
+		let y = e.offsetY;
+		
+		console.log(x, y)
 		
 		// Left click with control
 		if(e.button === 0 && this.ctrlDown) {
@@ -130,8 +132,8 @@ class Interaction {
 	}
 	
 	handleMouseUp = e => {
-		let x = e.layerX;
-		let y = e.layerY;
+		let x = e.offsetX;
+		let y = e.offsetY;
 		
 		if(this.draggingPan === true) {
 			this.finishPan();
@@ -145,8 +147,8 @@ class Interaction {
 	}
 	
 	handleMouseMove = e => {
-		const x = e.layerX;
-		const y = e.layerY;
+		const x = e.offsetX;
+		const y = e.offsetY;
 		
 		if(this.draggingPan === true) {
 			this.updatePan(x, y);
@@ -162,12 +164,12 @@ class Interaction {
 		
 		// Zoom in
 		if(e.deltaY < 0) {
-			this.plot.viewport.zoom(this.zoomMultiplier, e.layerX, e.layerY);
+			this.plot.viewport.zoom(this.zoomMultiplier, e.offsetX, e.offsetY);
 		}
 		
 		// Zoom out
 		else {
-			this.plot.viewport.zoom(1 / this.zoomMultiplier, e.layerX, e.layerY);
+			this.plot.viewport.zoom(1 / this.zoomMultiplier, e.offsetX, e.offsetY);
 		}
 
 		this.updateCursor();
