@@ -185,20 +185,20 @@ class Viewport {
 		let roundedLeftmostX = Math.floor(leftmostX / stepSize) * stepSize;
 
 		let mx = roundedLeftmostX;
-		ctx.strokeStyle = 'blue';
+		ctx.strokeStyle = 'grey';
 
-		ctx.font = '16px sans-serif';
+		ctx.font = '14px sans-serif';
 		ctx.fillText(`Start: ${mx}; Step: ${stepSize};`, 10, 16);
 		
-		for(let i = 0; i < steps + 1; i++) {
+		for(let i = 0; i < steps * 2; i++) {
 			let dx = mx + stepSize * i;
 			let x = this.dataToScreenX(dx);
 			if(x >= this.paddingLeft && x <= canvas.width - this.paddingRight) {
 				ctx.beginPath();
-				ctx.moveTo(x, canvas.height - 25);
-				ctx.lineTo(x, canvas.height - 5);
+				ctx.moveTo(x, canvas.height - this.paddingBottom);
+				ctx.lineTo(x, canvas.height - 20);
 				ctx.stroke();
-				ctx.fillText(`${dx}`, x + 5, canvas.height - 5)
+				ctx.fillText(`${dx}`, x - 4, canvas.height - 5)
 			}
 		}
 		
