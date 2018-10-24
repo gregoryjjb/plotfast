@@ -2,6 +2,7 @@ import canvas from './canvas';
 import Viewport from './viewport';
 import Interaction from './interaction';
 import Data from './data';
+import Events from './events';
 
 class Plotfast {
 	constructor(containerEl, opts = {}) {
@@ -14,9 +15,12 @@ class Plotfast {
 		plot.viewport = new Viewport(plot);
 		plot.interaction = new Interaction(plot);
 		plot.data = new Data(plot);
+		plot.events = new Events(plot);
 		
 		plot.datasets = [];
 	}
+	
+	addEventListener = (name, callback) => this.plot.events.addListener(name, callback);
 	
 	generateData(amount = 500) {
 		let data = [{x: 0, y: 0}];

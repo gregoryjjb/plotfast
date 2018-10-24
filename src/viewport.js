@@ -34,8 +34,6 @@ class Viewport {
 		this._plotHeight = 0;
 		
 		this._BENCH = [];
-
-		window.FIT = this.fit;
 	}
 	
 	_updateCalculations = () => {
@@ -64,6 +62,8 @@ class Viewport {
 		
 		this._offsetX = 0;
 		this._offsetY = 0;
+		
+		this._viewMoved();
 	}
 
 	_getPlotWidth = () => this.plot.canvas.width - this.paddingLeft - this.paddingRight;
@@ -92,15 +92,13 @@ class Viewport {
 		let x2 = this.screenToDataX(sEndX);
 		let y2 = this.screenToDataY(sEndY);
 		
-		console.log("X1 is", x1);
-
 		this.startX = Math.min(x1, x2);
 		this.endX = Math.max(x1, x2);
 
 		this.startY = Math.min(y1, y2);
 		this.endY = Math.max(y1, y2);
 
-		console.log(`New positions x1: ${this.startX}, y1: ${this.startY}, x2: ${this.endX}, y2: ${this.endY}`);
+		this._viewMoved();
 	}
 	
 	zoom = (amount, screenX, screenY) => {
@@ -118,6 +116,8 @@ class Viewport {
 		
 		this.startY = anchorY - anchorBottom;
 		this.endY = anchorY + anchorTop;
+		
+		this._viewMoved();
 	}
 
 	addPan = ({ x, y }) => {
@@ -148,6 +148,17 @@ class Viewport {
 		this.endX = maxX;
 		this.startY = minY;
 		this.endY = maxY;
+		
+		this._viewMoved();
+	}
+	
+	_viewMoved = () => {
+		this.plot.events.fireEvent('viewMoved', {
+			x1: this.startX,
+			x2: this.endX,
+			y1: this.startY,
+			y2: this.endY,
+		})
 	}
 	
 	start = () => {

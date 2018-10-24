@@ -44,6 +44,10 @@
             plot.removeDataset();
         });
         
+        plot.addEventListener('viewMoved', e => {
+            console.log(e.x1, e.x2, e.y1, e.y2);
+        })
+        
         window.plot = plot;
     </script>
 </body>
