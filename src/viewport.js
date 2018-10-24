@@ -85,6 +85,8 @@ class Viewport {
 	//screenToDataY = (s) => this._screenToData(s, this._minY, this._maxY, this.paddingTop + this._plotHeight, this.paddingTop);
 	
 	zoomToScreenCoords = (sStartX, sStartY, sEndX, sEndY) => {
+		if(sStartX === sEndX || sStartY === sEndY) return;
+		
 		let x1 = this.screenToDataX(sStartX);
 		let y1 = this.screenToDataY(sStartY);
 		let x2 = this.screenToDataX(sEndX);
@@ -102,7 +104,6 @@ class Viewport {
 	}
 	
 	zoom = (amount, screenX, screenY) => {
-		
 		let anchorX = this.screenToDataX(screenX);
 		let anchorY = this.screenToDataY(screenY);
 		
@@ -111,10 +112,6 @@ class Viewport {
 		
 		let anchorBottom = (anchorY - this.startY) * amount;
 		let anchorTop = (this.endY - anchorY) * amount;
-		
-		// pmin2 = p - (pmax - pmin) / 4, pmax2 = p + (pmax - pmin) / 4
-		let halfX = (this.endX - this.startX) * amount;
-		let halfY = (this.endY - this.startY) * amount;
 		
 		this.startX = anchorX - anchorLeft;
 		this.endX = anchorX + anchorRight;
