@@ -126,10 +126,10 @@ class Viewport {
 	}
 	
 	fit = () => {
-		if(!Array.isArray(this.plot.datasets)) return;
+		if(!Array.isArray(this.plot.data.sets)) return;
 		if(!this.plot.canvas) return;
 		
-		const { datasets } = this.plot;
+		const datasets = this.plot.data.sets;
 		
 		let maxX = datasets.map(({ data }) => data.length).reduce((a, b) => Math.max(a, b));
 		let maxY = 0;
@@ -157,7 +157,8 @@ class Viewport {
 	render = () => {
 		this._updateCalculations();
 		
-		const { data, datasets, canvas } = this.plot;
+		const { canvas } = this.plot;
+		const datasets = this.plot.data.sets;
 		
 		if(!datasets || !canvas || !canvas.getContext) return;
 		

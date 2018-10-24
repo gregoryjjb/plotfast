@@ -42,7 +42,9 @@
 
         document.querySelector("#clear").addEventListener("click", function(e) {
             plot.removeDataset();
-        })
+        });
+        
+        window.plot = plot;
     </script>
 </body>
 </html>

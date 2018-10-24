@@ -1,6 +1,7 @@
 import canvas from './canvas';
 import Viewport from './viewport';
 import Interaction from './interaction';
+import Data from './data';
 
 class Plotfast {
 	constructor(containerEl, opts = {}) {
@@ -12,6 +13,7 @@ class Plotfast {
 		plot.canvas = canvas(containerEl, opts.width, opts.height);
 		plot.viewport = new Viewport(plot);
 		plot.interaction = new Interaction(plot);
+		plot.data = new Data(plot);
 		
 		plot.datasets = [];
 	}
@@ -28,38 +30,9 @@ class Plotfast {
 		return data;
 	}
 
-	addDataset = (data, options) => {
-		if(!Array.isArray(data)) throw new Error("Dataset must be an array");
+	addDataset = (data, options) => this.plot.data.addDataset(data, options);
 
-		for(let i = 0; i < data.length; i++) {
-			if(
-				data[i] === undefined ||
-				data[i].x === undefined ||
-				data[i].y === undefined
-			) {
-				throw new Error("Elements of dataset must be objects of form {x, y}")
-			}
-		}
-
-		this.plot.datasets.push({
-			data,
-			...options,
-		});
-
-		console.log(this.plot.datasets);
-	}
-
-	removeDataset = index => {
-		if(index === undefined) {
-			this.plot.datasets = [];
-		}
-		else if(index >= this.plot.datasets.length || index < 0) {
-			throw new Error("Dataset index out of range");
-		}
-		else {
-			this.plot.datasets.splice(index, 1);
-		}
-	}
+	removeDataset = index => this.plot.data.removeDataset(index);
 	
 	render() {
 		plot.viewport.render();
