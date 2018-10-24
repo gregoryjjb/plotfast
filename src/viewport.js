@@ -186,7 +186,7 @@ class Viewport {
 		ctx.strokeStyle = 'grey';
 
 		ctx.font = '14px sans-serif';
-		ctx.fillText(`Start: ${mx}; Step: ${stepSize};`, 10, 16);
+		ctx.fillText(`Start: ${mx}; Step: ${stepSize};`, 40, 54);
 		
 		for(let i = 0; i < steps * 2; i++) {
 			let dx = mx + stepSize * i;
@@ -199,6 +199,23 @@ class Viewport {
 				ctx.fillText(`${dx}`, x - 4, canvas.height - 5)
 			}
 		}
+		
+		// Dataset names
+		let totalLength = this.paddingLeft;
+		let spacing = 20;
+		let baseline = 20;
+		ctx.font = '14px sans-serif';
+		
+		for(let i = 0; i < datasets.length; i++) {
+			let d = datasets[i];
+			ctx.fillStyle = d.color;
+			ctx.fillRect(totalLength, baseline - 11, 10, 10);
+			totalLength += 15;
+			ctx.fillText(d.name, totalLength, baseline);
+			totalLength += ctx.measureText(d.name).width + spacing;
+		}
+		
+		ctx.fillStyle = 'black';
 		
 		// Draw bounds around graph area (temporary?)
 		ctx.strokeStyle = 'lightgrey';
