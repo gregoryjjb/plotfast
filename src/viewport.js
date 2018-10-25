@@ -181,6 +181,103 @@ class Viewport {
 		// Clear
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
+		// Draw lines to points
+		/*data.filter(d => (
+			d.x > this._minX &&
+			d.x < this._maxX &&
+			d.y > this._minY &&
+			d.y < this._maxY
+		)).map(d => {
+			//let ssd = this.dataToScreenSpace(d);
+			let dx = this.dataToScreenX(d.x);
+			let dy = this.dataToScreenY(d.y);
+			ctx.lineTo(dx, dy);
+		})*/
+		
+		let t0;
+		let DEBUG = this.plot.options.logging;
+		if(DEBUG) t0 = performance.now();
+		let nPoints = 0;
+
+		for(let j = 0; j < datasets.length; j++) {
+			let set = datasets[j];
+			let data = set.data;
+			let inLine = false;
+
+			ctx.strokeStyle = set.color || 'black';
+
+			ctx.beginPath();
+
+			for(let i = 0; i < data.length; i++) {
+				let d = data[i];
+				
+				if(
+					d.x >= this._minX &&
+					d.x <= this._maxX &&
+					d.y >= this._minY &&
+					d.y <= this._maxY
+				) {
+					// We are in the visible area, draw the point
+					nPoints++;
+					
+					let dx = this.dataToScreenX(d.x);
+					let dy = this.dataToScreenY(d.y);
+					
+					// If in line already, continue it
+					if(inLine) {
+						ctx.lineTo(dx, dy);
+					}
+					// Otherwise we may have to start a new segment
+					else {
+						let prev = data[i - 1];
+						
+						if(prev) {
+							// Connecting line to the previous off-screen point
+							let px = this.dataToScreenX(prev.x);
+							let py = this.dataToScreenY(prev.y);
+							ctx.moveTo(px, py);
+							ctx.lineTo(dx, dy);
+						}
+						else {
+							// New standalone point with no previous
+							ctx.moveTo(dx, dy);
+						}
+						
+						inLine = true;
+					}
+				}
+				else {
+					if(inLine) {
+						// We just went off the edge of the screen, draw this last point
+						let dx = this.dataToScreenX(d.x);
+						let dy = this.dataToScreenY(d.y);
+						
+						ctx.lineTo(dx, dy);
+					}
+					
+					inLine = false;
+				}
+			}
+
+			ctx.stroke();
+		}
+
+		if(DEBUG) {
+			let t1 = performance.now();
+			if(this._BENCH.length >= 30) {
+				let avg = this._BENCH.reduce((acc, el) => acc + el) / this._BENCH.length;
+				console.log(`Drawing ${nPoints} points took %c${avg.toPrecision(3)}ms`, "color: blue;");
+				this._BENCH = [];
+			}
+			this._BENCH.push(t1 - t0);
+		}
+		
+		// Clear out margins in case of data hanging off the edge
+		ctx.clearRect(0, 0, canvas.width, this.paddingTop);
+		ctx.clearRect(0, 0, this.paddingLeft, canvas.height);
+		ctx.clearRect(0, canvas.height, canvas.width, -this.paddingBottom);
+		ctx.clearRect(canvas.width, 0, -this.paddingRight, canvas.height);
+		
 		// Axis labels (todo)
 		let rangeX = this._maxX - this._minX;
 		let rangeY = this._maxY - this._minY;
@@ -300,74 +397,6 @@ class Viewport {
 			ctx.moveTo(zeroX, this.paddingTop);
 			ctx.lineTo(zeroX, this.paddingTop + this._plotHeight);
 			ctx.stroke();
-		}
-		
-		let t0;
-		let DEBUG = this.plot.options.logging;
-		
-		// Draw lines to points
-		/*data.filter(d => (
-			d.x > this._minX &&
-			d.x < this._maxX &&
-			d.y > this._minY &&
-			d.y < this._maxY
-		)).map(d => {
-			//let ssd = this.dataToScreenSpace(d);
-			let dx = this.dataToScreenX(d.x);
-			let dy = this.dataToScreenY(d.y);
-			ctx.lineTo(dx, dy);
-		})*/
-
-		if(DEBUG) t0 = performance.now();
-		let nPoints = 0;
-
-		for(let j = 0; j < datasets.length; j++) {
-			let set = datasets[j];
-			let data = set.data;
-			let inLine = false;
-
-			ctx.strokeStyle = set.color || 'black';
-
-			ctx.beginPath();
-
-			for(let i = 0; i < data.length; i++) {
-				let d = data[i];
-
-				if(
-					d.x >= this._minX &&
-					d.x <= this._maxX &&
-					d.y >= this._minY &&
-					d.y <= this._maxY
-				) {
-					nPoints++;
-					
-					let dx = this.dataToScreenX(d.x);
-					let dy = this.dataToScreenY(d.y);
-					
-					if(inLine) {
-						ctx.lineTo(dx, dy);
-					}
-					else {
-						ctx.moveTo(dx, dy);
-						inLine = true;
-					}
-				}
-				else {
-					inLine = false;
-				}
-			}
-
-			ctx.stroke();
-		}
-
-		if(DEBUG) {
-			let t1 = performance.now();
-			if(this._BENCH.length >= 30) {
-				let avg = this._BENCH.reduce((acc, el) => acc + el) / this._BENCH.length;
-				console.log(`Drawing ${nPoints} points took %c${avg.toPrecision(3)}ms`, "color: blue;");
-				this._BENCH = [];
-			}
-			this._BENCH.push(t1 - t0);
 		}
 		
 		// Next frame
