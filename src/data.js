@@ -43,6 +43,22 @@ class Data {
 	}
 	
 	/**
+	 * Modify the data in a dataset
+	 * @param {number} id The index of the dataset
+	 * @param {Object[]} data The new dataset to replace with
+	 * @param {number} data[].x X coordinate of point
+	 * @param {number} data[].y Y coordinate of point
+	 */
+	updateDataset = (id, data) => {
+		if(id === undefined) return;
+		if(typeof id !== 'number') return;
+		if(id < 0 || id >= this.sets.length) return;
+		if(!Array.isArray(data)) return;
+		
+		this.sets[id].data = data;
+	}
+	
+	/**
 	 * Remove a dataset from the plot
 	 * @param {string | number} id The index or name of the dataset to remove
 	 */

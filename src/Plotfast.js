@@ -1,3 +1,4 @@
+import { createOptions } from './options';
 import canvas from './canvas';
 import Viewport from './viewport';
 import Interaction from './interaction';
@@ -6,12 +7,12 @@ import Events from './events';
 
 class Plotfast {
 	constructor(containerEl, opts = {}) {
-		console.log("Creating new plot");
 		
 		const plot = {};
 		this.plot = plot;
 		
-		plot.canvas = canvas(containerEl, opts.width, opts.height);
+		plot.options = createOptions(opts);
+		plot.canvas = canvas(containerEl, plot.options.width, plot.options.height);
 		plot.viewport = new Viewport(plot);
 		plot.interaction = new Interaction(plot);
 		plot.data = new Data(plot);
@@ -26,16 +27,15 @@ class Plotfast {
 		let data = [{x: 0, y: 0}];
 		for(let i = 1; i < amount; i++) {
 			data.push({
-				x: i,
+				x: i / 3,
 				y: Math.round((Math.random() - 0.5) * 10 + data[i - 1].y),
 			});
 		}
-		console.log('Generating data')
 		return data;
 	}
 
 	addDataset = (data, options) => this.plot.data.addDataset(data, options);
-
+	updateDataset = (id, data) => this.plot.data.updateDataset(id, data);
 	removeDataset = index => this.plot.data.removeDataset(index);
 	
 	render() {
