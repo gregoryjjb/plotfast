@@ -131,7 +131,8 @@ class Viewport {
 		
 		const datasets = this.plot.data.sets;
 		
-		let maxX = datasets.map(({ data }) => data.length).reduce((a, b) => Math.max(a, b));
+		let minX = datasets.map(({data}) => data[0].x).reduce((a, b) => Math.min(a, b));
+		let maxX = datasets.map(({ data }) => data[data.length - 1].x).reduce((a, b) => Math.max(a, b));
 		let maxY = 0;
 		let minY = Number.MAX_VALUE;
 		
@@ -144,7 +145,7 @@ class Viewport {
 			}
 		}
 
-		this.startX = 0;
+		this.startX = minX;
 		this.endX = maxX;
 		this.startY = minY;
 		this.endY = maxY;
