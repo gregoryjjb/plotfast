@@ -21,7 +21,7 @@ class Viewport {
 		this._minY = 0;
 		this._maxY = 0;
 
-		this.paddingLeft = 30;
+		this.paddingLeft = 50;
 		this.paddingRight = 30;
 
 		this.paddingTop = 30;
@@ -183,25 +183,29 @@ class Viewport {
 		
 		// Axis labels (todo)
 		let rangeX = this._maxX - this._minX;
+		let rangeY = this._maxY - this._minY;
 		let steps = 5;
-		let stepSizeRaw = Math.floor(rangeX / steps);
-		let stepSize = Number(stepSizeRaw.toPrecision(1))
-
-		let lenRange = utils.numDigits(Math.floor(rangeX));
-		let lenStep = utils.numDigits(stepSize);
-		let precisionStart = lenRange - lenStep + 1;
+		let stepSizeX = Number(Math.floor(rangeX / steps).toPrecision(1))
+		let stepSizeY = Number(Math.floor(rangeY / steps).toPrecision(1))
+		//let stepSizeRaw = Math.floor(rangeX / steps);
+		//let stepSize = Number(stepSizeRaw.toPrecision(1))
 		
 		let leftmostX = this.screenToDataX(this.paddingLeft);
-		let roundedLeftmostX = Math.floor(leftmostX / stepSize) * stepSize;
+		let roundedLeftmostX = Math.floor(leftmostX / stepSizeX) * stepSizeX;
+		
+		let bottommostY = this.screenToDataY(canvas.height - this.paddingBottom);
+		let roundedBottommostY = Math.floor(bottommostY / stepSizeY) * stepSizeY;
 
 		let mx = roundedLeftmostX;
+		let my = roundedBottommostY;
 		ctx.strokeStyle = 'grey';
 
+		ctx.textAlign = 'left';
 		ctx.font = '14px sans-serif';
-		ctx.fillText(`Start: ${mx}; Step: ${stepSize};`, 40, 54);
+		ctx.fillText(`Start: ${my}; Step: ${stepSizeY};`, 40, 54);
 		
 		for(let i = 0; i < steps * 2; i++) {
-			let dx = mx + stepSize * i;
+			let dx = mx + stepSizeX * i;
 			let x = this.dataToScreenX(dx);
 			if(x >= this.paddingLeft && x <= canvas.width - this.paddingRight) {
 				ctx.beginPath();
@@ -212,11 +216,35 @@ class Viewport {
 			}
 		}
 		
+		for(let i = 0; i < steps * 2; i++) {
+			let dy = my + stepSizeY * i;
+			let y = this.dataToScreenY(dy);
+			if(y >= this.paddingTop && y <= canvas.height - this.paddingBottom) {
+				ctx.beginPath();
+				ctx.moveTo(this.paddingLeft, y);
+				ctx.lineTo(this.paddingLeft - 10, y);
+				ctx.stroke();
+				ctx.textAlign = 'right';
+				ctx.fillText(`${dy}`, this.paddingLeft - 15, y + 7);
+			}
+		}
+		
+		/*ctx.save();
+		ctx.translate(this.paddingLeft, canvas.height - this.paddingBottom);
+		ctx.rotate(-Math.PI/2);
+		//ctx.fillText("Your Label Here", 0, 0);
+		ctx.beginPath();
+		ctx.moveTo(0, 0);
+		ctx.lineTo(0, -20);
+		ctx.stroke();
+		ctx.restore();*/
+		
 		// Dataset names
 		let totalLength = this.paddingLeft;
 		let spacing = 20;
 		let baseline = 20;
 		ctx.font = '14px sans-serif';
+		ctx.textAlign = 'left';
 		
 		for(let i = 0; i < datasets.length; i++) {
 			let d = datasets[i];
