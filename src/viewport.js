@@ -275,7 +275,7 @@ class Viewport {
 		}
 		
 		let t0;
-		let DEBUG = true;
+		let DEBUG = this.plot.options.logging;
 		
 		// Draw lines to points
 		/*data.filter(d => (

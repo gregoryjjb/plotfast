@@ -38,8 +38,6 @@ class Data {
 			...defaultOptions,
 			...options,
 		});
-
-		console.log(this.sets);
 	}
 	
 	/**
