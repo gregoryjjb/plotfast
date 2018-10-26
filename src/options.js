@@ -1,4 +1,5 @@
 const defaultOptions = {
+    logging: false,
     width: 640,
     height: 480,
     xLabel: 'X Axis',
