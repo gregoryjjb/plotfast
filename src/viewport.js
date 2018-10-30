@@ -21,11 +21,11 @@ class Viewport {
 		this._minY = 0;
 		this._maxY = 0;
 
-		this.paddingLeft = 50;
+		this.paddingLeft = 70;
 		this.paddingRight = 30;
 
 		this.paddingTop = 30;
-		this.paddingBottom = 30;
+		this.paddingBottom = 50;
 		
 		// DEFNINTELY don't set these directly
 		this._scaleX = 0;
@@ -312,17 +312,22 @@ class Viewport {
 
 		ctx.textAlign = 'left';
 		ctx.font = '14px sans-serif';
-		ctx.fillText(`Start: ${my}; Step: ${stepSizeY};`, 40, 54);
+		ctx.fillText(
+			`Start: ${my}; Step: ${stepSizeY};`,
+			this.paddingLeft + 10,
+			this.paddingTop + 24
+		);
 		
 		for(let i = 0; i < steps * 2; i++) {
 			let dx = mx + stepSizeX * i;
 			let x = this.dataToScreenX(dx);
+			let yTop = canvas.height - this.paddingBottom;
 			if(x >= this.paddingLeft && x <= canvas.width - this.paddingRight) {
 				ctx.beginPath();
-				ctx.moveTo(x, canvas.height - this.paddingBottom);
-				ctx.lineTo(x, canvas.height - 20);
+				ctx.moveTo(x, yTop);
+				ctx.lineTo(x, yTop + 10);
 				ctx.stroke();
-				ctx.fillText(`${dx}`, x - 4, canvas.height - 5)
+				ctx.fillText(`${dx}`, x - 4, yTop + 24)
 			}
 		}
 		
@@ -339,15 +344,16 @@ class Viewport {
 			}
 		}
 		
-		/*ctx.save();
-		ctx.translate(this.paddingLeft, canvas.height - this.paddingBottom);
+		// Axis names
+		// X
+		ctx.textAlign = 'center';
+		ctx.fillText(options.xLabel, canvas.width / 2, canvas.height - 5);
+		// Y
+		ctx.save();
+		ctx.translate(19, canvas.height / 2);
 		ctx.rotate(-Math.PI/2);
-		//ctx.fillText("Your Label Here", 0, 0);
-		ctx.beginPath();
-		ctx.moveTo(0, 0);
-		ctx.lineTo(0, -20);
-		ctx.stroke();
-		ctx.restore();*/
+		ctx.fillText(options.yLabel, 0, 0);
+		ctx.restore();
 		
 		// Dataset names
 		let totalLength = this.paddingLeft;
