@@ -32,6 +32,12 @@ class Data {
 				throw new Error("Elements of dataset must be objects of form {x, y}")
 			}
 		}
+		
+		data.sort((a, b) => {
+			if(a.x > b.x) return 1;
+			if(a.x < b.x) return -1;
+			return 0;
+		});
 
 		this.sets.push({
 			data,

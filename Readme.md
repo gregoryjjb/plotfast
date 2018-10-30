@@ -40,7 +40,7 @@ plot.start();
 
 ### Data
 
-Data is an array of objects in the form `{ x, y }`. Data is assumed to be sorted by x value.
+Data is an array of objects in the form `{ x, y }`. Data will be sorted by `x` value on initialization.
 
 ```javascript
 // Add new data, with options
