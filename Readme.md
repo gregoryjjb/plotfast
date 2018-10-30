@@ -72,6 +72,9 @@ var plot = new Plotfast(container, {
     height: 480,
     xLabel: 'X axis',
     yLabel: 'Y axis',
+    lineColor: 'lightgrey',
+    textColor: 'black',
+    backgroundColor: 'none',
 });
 ```
 

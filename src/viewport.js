@@ -166,10 +166,21 @@ class Viewport {
 		requestAnimationFrame(this.render);
 	}
 	
+	_clearRect = (ctx, x, y, w, h) => {
+		let bg = this.plot.options.backgroundColor;
+		if(!bg || bg === 'none') {
+			ctx.clearRect(x, y, w, h);
+		}
+		else {
+			ctx.fillStyle = this.plot.options.backgroundColor;
+			ctx.fillRect(x, y, w, h);
+		}
+	}
+	
 	render = () => {
 		this._updateCalculations();
 		
-		const { canvas } = this.plot;
+		const { canvas, options } = this.plot;
 		const datasets = this.plot.data.sets;
 		
 		if(!datasets || !canvas || !canvas.getContext) return;
@@ -179,7 +190,7 @@ class Viewport {
 		const zeroY = this.dataToScreenY(0);
 		
 		// Clear
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		this._clearRect(ctx, 0, 0, canvas.width, canvas.height);
 		
 		// Draw lines to points
 		/*data.filter(d => (
@@ -195,7 +206,7 @@ class Viewport {
 		})*/
 		
 		let t0;
-		let DEBUG = this.plot.options.logging;
+		let DEBUG = options.logging;
 		if(DEBUG) t0 = performance.now();
 		let nPoints = 0;
 
@@ -273,10 +284,10 @@ class Viewport {
 		}
 		
 		// Clear out margins in case of data hanging off the edge
-		ctx.clearRect(0, 0, canvas.width, this.paddingTop);
-		ctx.clearRect(0, 0, this.paddingLeft, canvas.height);
-		ctx.clearRect(0, canvas.height, canvas.width, -this.paddingBottom);
-		ctx.clearRect(canvas.width, 0, -this.paddingRight, canvas.height);
+		this._clearRect(ctx, 0, 0, canvas.width, this.paddingTop);
+		this._clearRect(ctx, 0, 0, this.paddingLeft, canvas.height);
+		this._clearRect(ctx, 0, canvas.height, canvas.width, -this.paddingBottom);
+		this._clearRect(ctx, canvas.width, 0, -this.paddingRight, canvas.height);
 		
 		// Axis labels (todo)
 		let rangeX = this._maxX - this._minX;
@@ -295,7 +306,9 @@ class Viewport {
 
 		let mx = roundedLeftmostX;
 		let my = roundedBottommostY;
-		ctx.strokeStyle = 'grey';
+		
+		ctx.strokeStyle = options.lineColor || 'lightgrey';
+		ctx.fillStyle = options.textColor || 'black';
 
 		ctx.textAlign = 'left';
 		ctx.font = '14px sans-serif';
@@ -352,10 +365,10 @@ class Viewport {
 			totalLength += ctx.measureText(d.name).width + spacing;
 		}
 		
-		ctx.fillStyle = 'black';
+		ctx.fillStyle = options.textColor || 'black';
 		
 		// Draw bounds around graph area (temporary?)
-		ctx.strokeStyle = 'lightgrey';
+		ctx.strokeStyle = options.lineColor || 'lightgrey';
 		ctx.lineWidth = "1";
 		ctx.setLineDash([]);
 		ctx.strokeRect(
@@ -381,7 +394,7 @@ class Viewport {
 		}
 
 		// Axes
-		ctx.strokeStyle = 'lightgrey';
+		ctx.strokeStyle = options.lineColor || 'lightgrey';
 		
 		//  Draw x axis
 		if(this._minY < 0 && this._maxY > 0) {
