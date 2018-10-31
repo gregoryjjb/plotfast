@@ -111,8 +111,6 @@ class Interaction {
 		let x = e.offsetX;
 		let y = e.offsetY;
 		
-		console.log(x, y)
-		
 		// Left click with control
 		if(e.button === 0 && this.ctrlDown) {
 			this.startBoxZoom(x, y);

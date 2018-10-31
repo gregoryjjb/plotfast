@@ -29,17 +29,10 @@
 			return color;
         }
         
-        function down(data, min, max, n) {
-            //return data;
-            //return plot.downsample(data.filter(d => (d.x >= min && d.x <= max)).map(d => ([d.x, d.y])), 1000).map(d => ({ x: d[0], y: d[1] }));
-            if(!n) n = 1000;
-            return plot.downsample(data/*.filter(d => (d.x >= min && d.x <= max))*/, n);
-        }
-        
         var container = document.getElementById("container");
-        var plot = new Plotfast(container, { logging: true });
+        var plot = new Plotfast(container, { logging: false });
         var data = plot.generateData(10000000);
-        plot.addDataset(down(data, 0, Number.MAX_SAFE_INTEGER),  { color: getRandomColor() });
+        plot.addDataset(data,  { color: getRandomColor() });
         plot.start();
 
         document.querySelector("#generate").addEventListener("click", function(e) {
@@ -53,12 +46,12 @@
         
         plot.addEventListener('viewMoved', e => {
             //console.log(e.x1, e.x2, e.y1, e.y2);
-            let visible = e.x2 - e.x1;
-            let total = data[data.length - 1].x - data[0].x;
-            let dec = Math.ceil(total / visible * 540);
-            console.log("Decimate to", dec)
-            let newData = down(data, e.x1, e.x2, dec);
-            plot.updateDataset(0, newData);
+            //let visible = e.x2 - e.x1;
+            //let total = data[data.length - 1].x - data[0].x;
+            //let dec = Math.ceil(total / visible * 540);
+            //console.log("Decimate to", dec)
+            //let newData = down(data, e.x1, e.x2, dec);
+            //plot.updateDataset(0, newData);
         })
         
         window.plot = plot;

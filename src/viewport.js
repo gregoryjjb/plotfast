@@ -33,8 +33,12 @@ class Viewport {
 		this._plotWidth = 0;
 		this._plotHeight = 0;
 		
+		this.plotWidth = 0;
+		
 		this._BENCH = [];
 	}
+	
+	getPlotWidth = () => this.plot.canvas.width - this.paddingLeft - this.paddingRight;
 	
 	_updateCalculations = () => {
 		this._minX = this.startX + this._offsetX;
@@ -212,7 +216,7 @@ class Viewport {
 
 		for(let j = 0; j < datasets.length; j++) {
 			let set = datasets[j];
-			let data = set.data;
+			let data = set.downsampledData;
 			let inLine = false;
 
 			ctx.strokeStyle = set.color || 'black';

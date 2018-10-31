@@ -6,8 +6,6 @@ import Interaction from './interaction';
 import Data from './data';
 import Events from './events';
 
-import { processData } from 'downsample-lttb';
-
 class Plotfast {
 	constructor(containerEl, opts = {}) {
 		
@@ -16,10 +14,10 @@ class Plotfast {
 		
 		plot.options = createOptions(opts);
 		plot.canvas = canvas(containerEl, plot.options.width, plot.options.height);
+		plot.events = new Events(plot);
 		plot.viewport = new Viewport(plot);
 		plot.interaction = new Interaction(plot);
 		plot.data = new Data(plot);
-		plot.events = new Events(plot);
 		
 		plot.datasets = [];
 	}

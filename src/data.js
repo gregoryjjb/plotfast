@@ -1,3 +1,5 @@
+import downsample from './downsample';
+import { clamp } from './utils';
 
 const defaultOptions = {
 	name: 'Dataset',
@@ -9,6 +11,96 @@ class Data {
 		this.plot = plot;
 		
 		this.sets = [];
+		
+		this.plot.events.addListener('viewMoved', e => {
+			if(e.x1 !== e.x2) this.updateDownsampling(e.x1, e.x2);
+		})
+	}
+	
+	downsampleSet = (data, min, max, resolution) => {
+		if(min === undefined) min = this.plot.viewport.startX;
+		if(max === undefined) max = this.plot.viewport.endX;
+		if(resolution === undefined) resolution = this.plot.viewport.getPlotWidth();
+		
+		let visible = max - min;
+		let total = data[data.length - 1].x - data[0].x;
+		let actualRes = Math.ceil(total / visible * resolution);
+		
+		let actualMin = min - visible * 2;
+		let actualMax = max + visible * 2;
+		
+		console.log("=========================================");
+		console.log("Downsampling to", actualRes, "points");
+		
+		let finalData;
+		
+		// If we are downsampling to more than 0.05% of our whole dataset,
+		// it's faster to filter first
+		if(actualRes > data.length * 0.0005) {
+			// If we are zoomed in
+			// Filter first
+			let slicedData = this.subsection(data, actualMin, actualMax);
+			let dsData = downsample(slicedData, resolution * 5);
+			finalData = dsData;
+			console.log("FILTER first");
+		}
+		else {
+			let dsData = downsample(data, actualRes);
+			let slicedData = this.subsection(dsData, actualMin, actualMax);
+			finalData = slicedData;
+			console.log("DOWNSAMPLE first");
+		}
+		
+		return finalData;
+	}
+	
+	_filterData = (data, min, max) => {
+		let arr = [];
+		for(let i = 0; i < data.length; i++) {
+			if(data[i].x > min && data[i].x < max) arr.push(data[i]);
+		}
+		return arr;
+	}
+	
+	subsection = (data, min, max) => {
+		let start = this._binarySearch(data, min);
+		if(data[start - 1] != undefined) start--;
+		let end = this._binarySearch(data, max);
+		if(data[end + 1] != undefined) end++;
+		return data.slice(start, end + 1);
+	}
+	
+	_binarySearch = (data, value) => {
+		let start = 0;
+		let stop = data.length - 1;
+		let middle = Math.floor((start + stop) / 2);
+		
+		while (stop > start) {
+			if(value < data[middle].x) {
+				stop = middle - 1;
+			}
+			else {
+				start = middle + 1;
+			}
+			
+			middle = Math.floor((start + stop) / 2);
+		}
+		
+		return clamp(middle, 0, data.length - 1);
+	}
+	
+	updateDownsampling = (min, max) => {
+		// Logging
+		let t0 = performance.now();
+		
+		for(let i = 0; i < this.sets.length; i++) {
+			let set = this.sets[i];
+			set.downsampledData = this.downsampleSet(set.data);
+		}
+		
+		let t1 = performance.now();
+		let t = (t1 - t0).toPrecision(3);
+		console.log(`Dowsampling took ${t}ms`);
 	}
 	
 	/**
@@ -38,12 +130,19 @@ class Data {
 			if(a.x < b.x) return -1;
 			return 0;
 		});
+		
+		let downsampledData = this.downsampleSet(data, data[0].x, data[data.length - 1].x);
+		
+		console.log("ENDED UP WITH", downsampledData.length, "POINTS OF DOWNSAMPLED");
 
 		this.sets.push({
 			data,
+			downsampledData,
 			...defaultOptions,
 			...options,
 		});
+		
+		//this.updateDownsampling();
 	}
 	
 	/**
