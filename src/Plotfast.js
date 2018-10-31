@@ -1,9 +1,12 @@
 import { createOptions } from './options';
+import downsample from './downsample';
 import canvas from './canvas';
 import Viewport from './viewport';
 import Interaction from './interaction';
 import Data from './data';
 import Events from './events';
+
+import { processData } from 'downsample-lttb';
 
 class Plotfast {
 	constructor(containerEl, opts = {}) {
@@ -50,6 +53,8 @@ class Plotfast {
 		this.plot.viewport.fit();
 		this.plot.viewport.start();
 	}
+	
+	downsample = (d, n) => downsample(d, n); // processData(d, n)
 }
 
 export default Plotfast;
