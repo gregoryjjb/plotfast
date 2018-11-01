@@ -12,8 +12,19 @@ class Data {
 		
 		this.sets = [];
 		
+		this._timeout = null;
+		
 		this.plot.events.addListener('viewMoved', e => {
-			if(e.x1 !== e.x2) this.updateDownsampling(e.x1, e.x2);
+			if(e.x1 === e.x2) return;
+			
+			if(e.type === 'zoom') {
+				clearTimeout(this._timeout);
+				this._timeout = setTimeout(() => this.updateDownsampling(e.x1, e.x2), 500);
+			}
+			else {
+				this.updateDownsampling(e.x1, e.x2);
+			}
+			
 		})
 	}
 	
@@ -71,22 +82,45 @@ class Data {
 	}
 	
 	_binarySearch = (data, value) => {
-		let start = 0;
-		let stop = data.length - 1;
-		let middle = Math.floor((start + stop) / 2);
+		const max = data.length - 1;
 		
-		while (stop > start) {
-			if(value < data[middle].x) {
-				stop = middle - 1;
+		if(value <= data[0].x) return 0;
+		if(value >= data[max].x) return max;
+		
+		let mid = 0;
+		let start = 0;
+		let stop = max;
+		
+		const getCloser = (i1, i2) => {
+			let val1 = data[i1].x;
+			let val2 = data[i2].x;
+			if(value - val1 >= val2 - value) {
+				return i2;
+			} else {
+				return i1;
 			}
-			else {
-				start = middle + 1;
-			}
-			
-			middle = Math.floor((start + stop) / 2);
 		}
 		
-		return clamp(middle, 0, data.length - 1);
+		while (start < stop) {
+			mid = Math.floor((start + stop) / 2);
+			
+			if(value === data[mid].x) return mid;
+			
+			if(value < data[mid].x) {
+				if(mid > 0 && value > data[mid - 1].x) {
+					return getCloser(mid - 1, mid);
+				}
+				stop = mid;
+			}
+			else {
+				if (mid < max - 1 && value < data[mid + 1].x) {
+					return getCloser(mid, mid + 1);
+				}
+				start = mid + 1;
+			}
+		}
+		
+		return mid;
 	}
 	
 	updateDownsampling = (min, max) => {
