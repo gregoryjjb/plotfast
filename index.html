@@ -31,7 +31,7 @@
         
         var container = document.getElementById("container");
         var plot = new Plotfast(container, { logging: false });
-        var data = plot.generateData(10000000);
+        var data = plot.generateData(100000);
         plot.addDataset(data,  { color: getRandomColor() });
         plot.start();
 

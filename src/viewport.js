@@ -35,6 +35,9 @@ class Viewport {
 		
 		this.plotWidth = 0;
 		
+		this.selectedX = null;
+		this.selectedY = null;
+		
 		this._BENCH = [];
 	}
 	
@@ -121,7 +124,7 @@ class Viewport {
 		this.startY = anchorY - anchorBottom;
 		this.endY = anchorY + anchorTop;
 		
-		this._viewMoved();
+		this._viewMoved('zoom');
 	}
 
 	addPan = ({ x, y }) => {
@@ -157,8 +160,9 @@ class Viewport {
 		this._viewMoved();
 	}
 	
-	_viewMoved = () => {
+	_viewMoved = (type) => {
 		this.plot.events.fireEvent('viewMoved', {
+			type: type,
 			x1: this.startX,
 			x2: this.endX,
 			y1: this.startY,
@@ -179,6 +183,37 @@ class Viewport {
 			ctx.fillStyle = this.plot.options.backgroundColor;
 			ctx.fillRect(x, y, w, h);
 		}
+	}
+	
+	findUnderMouse = (msx, msy) => {
+		const { data } = this.plot;
+		const { sets } = data;
+		
+		let mdx = this.screenToDataX(msx);
+		
+		sets.forEach(set => {
+			let index = data._binarySearch(set.downsampledData, mdx);
+			let point = set.downsampledData[index];
+			
+			let pointScreenX = this.dataToScreenX(point.x);
+			let pointScreenY = this.dataToScreenY(point.y);
+			
+			let deltaX = Math.abs(pointScreenX - msx);
+			let deltaY = Math.abs(pointScreenY - msy);
+			
+			console.log("X", deltaX, "Y", deltaY)
+			
+			if(deltaX < 20 && deltaY < 20) {
+				this.selectedX = point.x;
+				this.selectedY = point.y;
+			}
+			else {
+				this.selectedX = null;
+				this.selectedY = null;
+			}
+			
+			//console.log("My point's X:", set.downsampledData[index].x);
+		})
 	}
 	
 	render = () => {
@@ -419,6 +454,20 @@ class Viewport {
 			ctx.beginPath();
 			ctx.moveTo(zeroX, this.paddingTop);
 			ctx.lineTo(zeroX, this.paddingTop + this._plotHeight);
+			ctx.stroke();
+		}
+		
+		if(this.selectedX !== null && this.selectedY !== null) {
+			let x = this.dataToScreenX(this.selectedX);
+			let y = this.dataToScreenY(this.selectedY);
+			
+			let yUp = y - 10;
+			let yDown = y + 10;
+			
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(x, yUp);
+			ctx.lineTo(x, yDown);
 			ctx.stroke();
 		}
 		

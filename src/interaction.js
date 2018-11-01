@@ -152,8 +152,12 @@ class Interaction {
 			this.updatePan(x, y);
 		}
 
-		if(this.draggingZoom === true) {
+		else if(this.draggingZoom === true) {
 			this.updateBoxZoom(x, y);
+		}
+		
+		else {
+			this.plot.viewport.findUnderMouse(x, y);
 		}
 	}
 
