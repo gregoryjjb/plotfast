@@ -185,25 +185,54 @@ class Viewport {
 		}
 	}
 	
+	distance = (p1, p2) => {
+		let dx = Math.abs(p1.x - p2.x);
+		let dy = Math.abs(p1.y - p2.y);
+		return Math.sqrt(dx*dx + dy*dy);
+	}
+	
 	findUnderMouse = (msx, msy) => {
 		const { data } = this.plot;
 		const { sets } = data;
 		
-		let mdx = this.screenToDataX(msx);
+		const range = 10;
+		
+		let scanStartScreen = msx - range;
+		let scanEndScreen = msx + range;
+		
+		let scanStartData = this.screenToDataX(scanStartScreen);
+		let scanEndData = this.screenToDataX(scanEndScreen);
+		
+		let mouseScreenPoint = { x: msx, y: msy };
 		
 		sets.forEach(set => {
-			let index = data._binarySearch(set.downsampledData, mdx);
-			let point = set.downsampledData[index];
+			let startIndex = data._binarySearch(set.downsampledData, scanStartData);
+			let endIndex = data._binarySearch(set.downsampledData, scanEndData);
 			
+			let nearestPoint = null;
+			let smallestDistance = Number.MAX_VALUE;
+			
+			for(let i = startIndex; i <= endIndex; i++) {
+				let p = set.downsampledData[i];
+				let ps = {
+					x: this.dataToScreenX(p.x),
+					y: this.dataToScreenY(p.y),
+				};
+				let dist = this.distance(ps, mouseScreenPoint);
+				if(!nearestPoint || dist < smallestDistance) {
+					nearestPoint = p;
+					smallestDistance = dist;
+				}
+			}
+			
+			let point = nearestPoint;
 			let pointScreenX = this.dataToScreenX(point.x);
 			let pointScreenY = this.dataToScreenY(point.y);
 			
 			let deltaX = Math.abs(pointScreenX - msx);
 			let deltaY = Math.abs(pointScreenY - msy);
 			
-			//console.log("X", deltaX, "Y", deltaY)
-			
-			if(deltaX < 20 && deltaY < 20) {
+			if(deltaX < range && deltaY < range) {
 				this.selectedX = point.x;
 				this.selectedY = point.y;
 			}

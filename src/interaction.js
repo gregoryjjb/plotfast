@@ -1,3 +1,4 @@
+import { benchmark } from './utils';
 
 class Interaction {
 	constructor(plot) {
@@ -157,6 +158,7 @@ class Interaction {
 		}
 		
 		else {
+			//benchmark(this.plot.viewport.findUnderMouse, [x, y], 'FindUnderMouse');
 			this.plot.viewport.findUnderMouse(x, y);
 		}
 	}

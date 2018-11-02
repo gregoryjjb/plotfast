@@ -28,4 +28,12 @@ export const clamp = (n, min, max) => {
 	return Math.min(Math.max(n, min), max);
 }
 
+export const benchmark = (f, args, name) => {
+	const t0 = performance.now();
+	const result = f(...args);
+	const t1 = performance.now();
+	let t = (t1 - t0).toPrecision(3);
+	console.log(`${name} took ${t}ms`);
+}
+
 export default { numDigits, round }
