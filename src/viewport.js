@@ -201,7 +201,7 @@ class Viewport {
 			let deltaX = Math.abs(pointScreenX - msx);
 			let deltaY = Math.abs(pointScreenY - msy);
 			
-			console.log("X", deltaX, "Y", deltaY)
+			//console.log("X", deltaX, "Y", deltaY)
 			
 			if(deltaX < 20 && deltaY < 20) {
 				this.selectedX = point.x;
@@ -211,8 +211,6 @@ class Viewport {
 				this.selectedX = null;
 				this.selectedY = null;
 			}
-			
-			//console.log("My point's X:", set.downsampledData[index].x);
 		})
 	}
 	

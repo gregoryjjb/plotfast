@@ -19,7 +19,7 @@ class Data {
 			
 			if(e.type === 'zoom') {
 				clearTimeout(this._timeout);
-				this._timeout = setTimeout(() => this.updateDownsampling(e.x1, e.x2), 500);
+				this._timeout = setTimeout(() => this.updateDownsampling(e.x1, e.x2), 250);
 			}
 			else {
 				this.updateDownsampling(e.x1, e.x2);
@@ -39,28 +39,43 @@ class Data {
 		
 		let actualMin = min - visible * 2;
 		let actualMax = max + visible * 2;
+		let actualRange = actualMax - actualMin;
 		
 		console.log("=========================================");
 		console.log("Downsampling to", actualRes, "points");
 		
-		let finalData;
+		let dataRange = data[data.length - 1].x - data[0].x;
+		
+		let finalData, slicedData;
+		
+		if(actualRange > dataRange) {
+			console.warn("WE'RE WASTING EFFORT IF WE SLICE HERE");
+			slicedData = data;
+		}
+		else {
+			slicedData = this.subsection(data, actualMin, actualMax);
+		}
+		
+		finalData = downsample(slicedData, resolution * 5);
 		
 		// If we are downsampling to more than 0.05% of our whole dataset,
 		// it's faster to filter first
-		if(actualRes > data.length * 0.0005) {
-			// If we are zoomed in
-			// Filter first
-			let slicedData = this.subsection(data, actualMin, actualMax);
-			let dsData = downsample(slicedData, resolution * 5);
-			finalData = dsData;
-			console.log("FILTER first");
-		}
-		else {
-			let dsData = downsample(data, actualRes);
-			let slicedData = this.subsection(dsData, actualMin, actualMax);
-			finalData = slicedData;
-			console.log("DOWNSAMPLE first");
-		}
+		//if(actualRes > data.length * 0.0005) {
+		//	// If we are zoomed in
+		//	// Filter first
+		//	slicedData = this.subsection(data, actualMin, actualMax);
+		//	let dsData = downsample(slicedData, resolution * 5);
+		//	finalData = dsData;
+		//	console.log("FILTER first");
+		//}
+		//else {
+		//	let dsData = downsample(data, actualRes);
+		//	slicedData = this.subsection(dsData, actualMin, actualMax);
+		//	finalData = slicedData;
+		//	console.log("DOWNSAMPLE first");
+		//}
+		
+		//console.log("Copied", slicedData.length, "points");
 		
 		return finalData;
 	}
