@@ -152,13 +152,15 @@ class Interaction {
 		if(this.draggingPan === true) {
 			this.updatePan(x, y);
 		}
-
 		else if(this.draggingZoom === true) {
 			this.updateBoxZoom(x, y);
 		}
 		
-		else {
+		if(this.shiftDown || this.ctrlDown) {
 			//benchmark(this.plot.viewport.findUnderMouse, [x, y], 'FindUnderMouse');
+			this.plot.viewport.findUnderMouse(null, null);
+		}
+		else {
 			this.plot.viewport.findUnderMouse(x, y);
 		}
 	}
@@ -197,6 +199,7 @@ class Interaction {
 		}
 
 		this.updateCursor();
+		this.plot.viewport.findUnderMouse(null, null);
 	}
 	
 	handleKeyup = e => {

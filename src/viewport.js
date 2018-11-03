@@ -193,6 +193,7 @@ class Viewport {
 	
 	findUnderMouse = (msx, msy) => {
 		if(
+			msx === null ||
 			msx < this.paddingLeft ||
 			msx > this.plot.canvas.width - this.paddingRight ||
 			msy < this.paddingTop ||
@@ -498,9 +499,6 @@ class Viewport {
 			let x = this.dataToScreenX(this.selectedX);
 			let y = this.dataToScreenY(this.selectedY);
 			
-			let yUp = y - 10;
-			let yDown = y + 10;
-			
 			//ctx.strokeStyle = 'red';
 			//ctx.beginPath();
 			//ctx.moveTo(x, yUp);
@@ -532,7 +530,7 @@ class Viewport {
 			let w = Math.min(Math.max(w1, w2) + padding * 2, maxWidth);
 			let h = (14 * 2) + padding * 2 + 10;
 			let cornerX = x + (x < maxWidth ? 10 : -w - 10);
-			let cornerY = y - h - 10;
+			let cornerY = Math.max(y - h - 10, 10);
 			
 			ctx.fillRect(cornerX, cornerY, w, h);
 			ctx.restore();
