@@ -507,6 +507,34 @@ class Viewport {
 			ctx.moveTo(x, yUp);
 			ctx.lineTo(x, yDown);
 			ctx.stroke();
+			
+			ctx.save();
+			
+			ctx.fillStyle = '#FFF';
+			ctx.shadowBlur = 5;
+			ctx.shadowColor = '#555';
+			ctx.shadowOffsetY = 2;
+			
+			let string1 = `x: ${this.selectedX}`;
+			let string2 = `y: ${this.selectedY}`;
+			
+			let padding = 10;
+			let maxTextWidth = 250;
+			let maxWidth = maxTextWidth + padding * 2;
+			
+			let w1 = ctx.measureText(string1).width;
+			let w2 = ctx.measureText(string2).width;
+			let w = Math.min(Math.max(w1, w2) + padding * 2, maxWidth);
+			let h = (14 * 2) + padding * 2 + 10;
+			let cornerX = x + (x < maxWidth ? 10 : -w - 10);
+			let cornerY = y - h - 10;
+			
+			ctx.fillRect(cornerX, cornerY, w, h);
+			ctx.restore();
+			
+			ctx.fillStyle = 'black';
+			ctx.fillText(string1, cornerX + padding, cornerY + 14 + padding, maxWidth);
+			ctx.fillText(string2, cornerX + padding, cornerY + h - padding, maxWidth);
 		}
 		
 		// Next frame
