@@ -501,17 +501,23 @@ class Viewport {
 			let yUp = y - 10;
 			let yDown = y + 10;
 			
-			ctx.strokeStyle = 'red';
+			//ctx.strokeStyle = 'red';
+			//ctx.beginPath();
+			//ctx.moveTo(x, yUp);
+			//ctx.lineTo(x, yDown);
+			//ctx.stroke();
+			ctx.fillStyle = 'lightgrey';
+			ctx.strokeStyle = 'black';
 			ctx.beginPath();
-			ctx.moveTo(x, yUp);
-			ctx.lineTo(x, yDown);
+			ctx.arc(x, y, 3, 0, Math.PI * 2);
+			ctx.fill();
 			ctx.stroke();
 			
 			ctx.save();
 			
 			ctx.fillStyle = '#FFF';
-			ctx.shadowBlur = 5;
-			ctx.shadowColor = '#555';
+			ctx.shadowBlur = 4;
+			ctx.shadowColor = '#777';
 			ctx.shadowOffsetY = 2;
 			
 			let string1 = `x: ${this.selectedX}`;
