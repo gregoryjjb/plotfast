@@ -192,6 +192,17 @@ class Viewport {
 	}
 	
 	findUnderMouse = (msx, msy) => {
+		if(
+			msx < this.paddingLeft ||
+			msx > this.plot.canvas.width - this.paddingRight ||
+			msy < this.paddingTop ||
+			msy > this.plot.canvas.height - this.paddingBottom
+		) {
+			this.selectedX = null;
+			this.selectedY = null;
+			return;
+		}
+		
 		const { data } = this.plot;
 		const { sets } = data;
 		

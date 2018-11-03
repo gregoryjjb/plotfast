@@ -30,8 +30,8 @@
         }
         
         var container = document.getElementById("container");
-        var plot = new Plotfast(container, { logging: false, width: 1280, height: 720 });
-        var data = plot.generateData(10000000);
+        var plot = new Plotfast(container, { logging: true, width: 640, height: 480 });
+        var data = plot.generateData(1000000);
         plot.addDataset(data,  { color: getRandomColor() });
         plot.start();
 
