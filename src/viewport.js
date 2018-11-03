@@ -216,12 +216,12 @@ class Viewport {
 		
 		let mouseScreenPoint = { x: msx, y: msy };
 		
+		let nearestPoint = null;
+		let smallestDistance = Number.MAX_VALUE;
+		
 		sets.forEach(set => {
 			let startIndex = data._binarySearch(set.downsampledData, scanStartData);
 			let endIndex = data._binarySearch(set.downsampledData, scanEndData);
-			
-			let nearestPoint = null;
-			let smallestDistance = Number.MAX_VALUE;
 			
 			for(let i = startIndex; i <= endIndex; i++) {
 				let p = set.downsampledData[i];
@@ -234,24 +234,23 @@ class Viewport {
 					nearestPoint = p;
 					smallestDistance = dist;
 				}
-			}
-			
-			let point = nearestPoint;
-			let pointScreenX = this.dataToScreenX(point.x);
-			let pointScreenY = this.dataToScreenY(point.y);
-			
-			let deltaX = Math.abs(pointScreenX - msx);
-			let deltaY = Math.abs(pointScreenY - msy);
-			
-			if(deltaX < range && deltaY < range) {
-				this.selectedX = point.x;
-				this.selectedY = point.y;
-			}
-			else {
-				this.selectedX = null;
-				this.selectedY = null;
-			}
+			}	
 		})
+		
+		let pointScreenX = this.dataToScreenX(nearestPoint.x);
+		let pointScreenY = this.dataToScreenY(nearestPoint.y);
+		
+		let deltaX = Math.abs(pointScreenX - msx);
+		let deltaY = Math.abs(pointScreenY - msy);
+		
+		if(deltaX < range && deltaY < range) {
+			this.selectedX = nearestPoint.x;
+			this.selectedY = nearestPoint.y;
+		}
+		else {
+			this.selectedX = null;
+			this.selectedY = null;
+		}
 	}
 	
 	render = () => {
