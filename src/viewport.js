@@ -42,6 +42,7 @@ class Viewport {
 	}
 	
 	getPlotWidth = () => this.plot.canvas.width - this.paddingLeft - this.paddingRight;
+	getPlotHeight = () => this.plot.canvas.height - this.paddingTop - this.paddingBottom;
 	
 	_updateCalculations = () => {
 		this._minX = this.startX + this._offsetX;
@@ -72,9 +73,6 @@ class Viewport {
 		
 		this._viewMoved();
 	}
-
-	_getPlotWidth = () => this.plot.canvas.width - this.paddingLeft - this.paddingRight;
-	_getPlotHeight = () => this.plot.canvas.height - this.paddingTop - this.paddingBottom;
 
 	_dataToScreen = (d, dMin, dMax, sMin, sMax) => (d - dMin) * ((sMax - sMin) / (dMax - dMin)) + sMin;
 	_screenToData = (s, dMin, dMax, sMin, sMax) => (s - sMin) * ((dMax - dMin) / (sMax - sMin)) + dMin;
@@ -126,11 +124,6 @@ class Viewport {
 		
 		this._viewMoved('zoom');
 	}
-
-	addPan = ({ x, y }) => {
-		this.xPos -= x;
-		this.yPos -= y;
-	}
 	
 	fit = () => {
 		if(!Array.isArray(this.plot.data.sets)) return;
@@ -138,7 +131,7 @@ class Viewport {
 		
 		const datasets = this.plot.data.sets;
 		
-		let minX = datasets.map(({data}) => data[0].x).reduce((a, b) => Math.min(a, b));
+		let minX = datasets.map(({ data }) => data[0].x).reduce((a, b) => Math.min(a, b));
 		let maxX = datasets.map(({ data }) => data[data.length - 1].x).reduce((a, b) => Math.max(a, b));
 		let maxY = 0;
 		let minY = Number.MAX_VALUE;
@@ -157,7 +150,7 @@ class Viewport {
 		this.startY = minY;
 		this.endY = maxY;
 		
-		this._viewMoved();
+		this._viewMoved('fit');
 	}
 	
 	_viewMoved = (type) => {
@@ -515,7 +508,7 @@ class Viewport {
 			
 			ctx.fillStyle = '#FFF';
 			ctx.shadowBlur = 4;
-			ctx.shadowColor = '#777';
+			ctx.shadowColor = 'rgba(0,0,0,0.5)';
 			ctx.shadowOffsetY = 2;
 			
 			let string1 = `x: ${this.selectedX}`;
