@@ -13,6 +13,7 @@ class Plotfast {
 		this.plot = plot;
 		
 		plot.options = createOptions(opts);
+		plot.containerRef = containerEl;
 		plot.canvas = canvas(containerEl, plot.options.width, plot.options.height);
 		plot.events = new Events(plot);
 		plot.viewport = new Viewport(plot);

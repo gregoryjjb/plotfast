@@ -25,7 +25,7 @@ class Viewport {
 		this.paddingLeft = 70;
 		this.paddingRight = 30;
 
-		this.paddingTop = 30;
+		this.paddingTop = 40;
 		this.paddingBottom = 50;
 		
 		// DEFNINTELY don't set these directly
@@ -109,9 +109,12 @@ class Viewport {
 		canvas.style.position = 'fixed';
 		canvas.style.top = 0;
 		canvas.style.bottom = 0;
+		canvas.style.zIndex = Number.MAX_SAFE_INTEGER; // Big value
 		
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
+		
+		document.querySelector('body').appendChild(canvas);
 	}
 	
 	unsetFullscreen = () => {
@@ -122,9 +125,12 @@ class Viewport {
 		canvas.style.position = 'unset';
 		canvas.style.top = 'unset';
 		canvas.style.bottom = 'unset';
+		canvas.style.zIndex = 'unset';
 		
 		canvas.width = options.width;
 		canvas.height = options.height;
+		
+		this.plot.containerRef.appendChild(canvas);
 	}
 	
 	toggleFullscreen = () => this._fullscreen ? this.unsetFullscreen() : this.setFullscreen();
@@ -535,11 +541,12 @@ class Viewport {
 		if(this.fullscreenImg) {
 			let w = this.paddingRight - 10;
 			let h = this.paddingTop - 10;
-			let x = canvas.width - this.paddingRight + 5;
-			let y = 5;
+			let size = Math.min(w, h);
+			let x = canvas.width + (this.paddingRight - size) / 2 - this.paddingRight;
+			let y = (this.paddingTop - size) / 2;
 			
 			ctx.fillColor = 'grey'
-			ctx.drawImage(this.fullscreenImg, x, y, w, h);
+			ctx.drawImage(this.fullscreenImg, x, y, size, size);
 		}
 		
 		if(this.selectedX !== null && this.selectedY !== null) {
