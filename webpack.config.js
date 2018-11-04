@@ -1,3 +1,5 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 module.exports = (env, argv) => ({
 	module: {
 		rules: [
@@ -13,15 +15,25 @@ module.exports = (env, argv) => ({
 				use: [
 					'file-loader'
 				]
-			}
+			},
+			{
+				test: /\.html?$/,
+				loader: "file-loader?name=[name].[ext]"
+			},
 		]
 	},
 	output: {
 		library: 'Plotfast',
 	},
-	devServer: {
-		historyApiFallback: {
-			index: 'index.html'
-		}
-	}
+	plugins: [
+		new HtmlWebpackPlugin({
+			template: './index.html',
+			filename: './dist/index.html',
+		}),
+	],
+	//devServer: {
+	//	historyApiFallback: {
+	//		index: 'index.html'
+	//	}
+	//}
 })
