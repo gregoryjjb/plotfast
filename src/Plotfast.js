@@ -50,6 +50,7 @@ class Plotfast {
 
 	start = () => {
 		this.plot.viewport.fit();
+		this.plot.data.updateDownsampling();
 		this.plot.viewport.start();
 	}
 	

@@ -263,8 +263,10 @@ class Viewport {
 		let smallestDistance = Number.MAX_VALUE;
 		
 		sets.forEach(set => {
-			let startIndex = data._binarySearch(set.downsampledData, scanStartData);
-			let endIndex = data._binarySearch(set.downsampledData, scanEndData);
+			let startIndex = data.binarySearch(set.downsampledData, scanStartData);
+			let endIndex = data.binarySearch(set.downsampledData, scanEndData);
+			
+			if(startIndex === -1 || endIndex === -1) return;
 			
 			for(let i = startIndex; i <= endIndex; i++) {
 				let p = set.downsampledData[i];
@@ -279,6 +281,12 @@ class Viewport {
 				}
 			}	
 		})
+		
+		if(nearestPoint === null) {
+			this.selectedX = null;
+			this.selectedY = null;
+			return;
+		}
 		
 		let pointScreenX = this.dataToScreenX(nearestPoint.x);
 		let pointScreenY = this.dataToScreenY(nearestPoint.y);

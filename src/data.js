@@ -24,8 +24,15 @@ class Data {
 			else {
 				this.updateDownsampling(e.x1, e.x2);
 			}
-			
 		})
+		
+		//const testData = [0, 1, 2, 3].map(n => ({ x: n }));
+		//const find = -1;
+		//
+		//const hi = this.binarySearch(testData, find, 1);
+		//const lo = this.binarySearch(testData, find, -1);
+		//const cl = this.binarySearch(testData, find, 0);
+		//console.log("Hi", hi, "Lo", lo, "Close", cl);
 	}
 	
 	downsampleSet = (data, min, max, resolution) => {
@@ -51,36 +58,22 @@ class Data {
 		if(actualRange > dataRange) {
 			console.warn("WE'RE WASTING EFFORT IF WE SLICE HERE");
 			slicedData = data;
+			resolution = actualRes;
 		}
 		else {
-			slicedData = this.subsection(data, actualMin, actualMax);
+			slicedData = this.subsection(data, actualMin, actualMax, true);
+			resolution *= 5;
 		}
 		
-		finalData = downsample(slicedData, resolution * 5);
-		
-		// If we are downsampling to more than 0.05% of our whole dataset,
-		// it's faster to filter first
-		//if(actualRes > data.length * 0.0005) {
-		//	// If we are zoomed in
-		//	// Filter first
-		//	slicedData = this.subsection(data, actualMin, actualMax);
-		//	let dsData = downsample(slicedData, resolution * 5);
-		//	finalData = dsData;
-		//	console.log("FILTER first");
-		//}
-		//else {
-		//	let dsData = downsample(data, actualRes);
-		//	slicedData = this.subsection(dsData, actualMin, actualMax);
-		//	finalData = slicedData;
-		//	console.log("DOWNSAMPLE first");
-		//}
-		
-		//console.log("Copied", slicedData.length, "points");
+		finalData = downsample(slicedData, resolution);
 		
 		return finalData;
 	}
 	
-	_filterData = (data, min, max) => {
+	/**
+	 * @deprecated Use subsection instead
+	 */
+	filter = (data, min, max) => {
 		let arr = [];
 		for(let i = 0; i < data.length; i++) {
 			if(data[i].x > min && data[i].x < max) arr.push(data[i]);
@@ -88,28 +81,61 @@ class Data {
 		return arr;
 	}
 	
-	subsection = (data, min, max) => {
-		let start = this._binarySearch(data, min);
-		if(data[start - 1] != undefined) start--;
-		let end = this._binarySearch(data, max);
-		if(data[end + 1] != undefined) end++;
+	/**
+	 * Get a subsection of an array of data
+	 * @param {[{x: number, y: number}]} data Data array
+	 * @param {number} min Minimum data value
+	 * @param {number} max Maximum data value
+	 * @param {bool} [includeOuter=false] Include one extra point on each side just outside the range
+	 */
+	subsection = (data, min, max, includeOuter = false) => {
+		if(min > max) return [];
+		
+		let start = this.binarySearch(data, min, includeOuter ? 0 : 1);
+		let end = this.binarySearch(data, max, includeOuter ? 0 : -1);
+		
+		if(start === -1 || end === -1) return [];
+		
+		if(includeOuter && data[start].x > min && start > 0) start--;
+		if(includeOuter && data[end].x < max && end < data.length - 1) end++;
+		
 		return data.slice(start, end + 1);
 	}
 	
-	_binarySearch = (data, value) => {
+	/**
+	 * Find the index of a given X value using binary search
+	 * @param {[x: number, y: number]} data The data array to search
+	 * @param {number} value The value to find
+	 * @param {number} [hilo=0] -1: closest lower, 1: closest higher, 0: closest
+	 * @return {number} The index of the point, or -1 if the point wasn't found
+	 */
+	binarySearch = (data, value, hilo = 0) => {
 		const max = data.length - 1;
 		
-		if(value <= data[0].x) return 0;
-		if(value >= data[max].x) return max;
+		if(data.length === 0) {
+			return -1;
+		}
+		if(value <= data[0].x) {
+			return hilo >= 0 ? 0 : -1;
+		}
+		if(value >= data[max].x) {
+			return hilo <= 0 ? max : -1;
+		}
 		
 		let mid = 0;
 		let start = 0;
 		let stop = max;
 		
-		const getCloser = (i1, i2) => {
+		const pick = (i1, i2) => {
 			let val1 = data[i1].x;
 			let val2 = data[i2].x;
-			if(value - val1 >= val2 - value) {
+			if(hilo === 1) {
+				return i2;
+			}
+			else if(hilo === -1) {
+				return i1;
+			}
+			else if(value - val1 >= val2 - value) {
 				return i2;
 			} else {
 				return i1;
@@ -123,13 +149,13 @@ class Data {
 			
 			if(value < data[mid].x) {
 				if(mid > 0 && value > data[mid - 1].x) {
-					return getCloser(mid - 1, mid);
+					return pick(mid - 1, mid);
 				}
 				stop = mid;
 			}
 			else {
 				if (mid < max - 1 && value < data[mid + 1].x) {
-					return getCloser(mid, mid + 1);
+					return pick(mid, mid + 1);
 				}
 				start = mid + 1;
 			}
@@ -138,7 +164,15 @@ class Data {
 		return mid;
 	}
 	
+	/**
+	 * Re-downsample all datasets to area within range
+	 * @param {number} min Start of range
+	 * @param {number} max End of range
+	 */
 	updateDownsampling = (min, max) => {
+		if(min === undefined) min = this.plot.viewport.startX;
+		if(max === undefined) max = this.plot.viewport.endX;
+		
 		// Logging
 		let t0 = performance.now();
 		
@@ -182,16 +216,12 @@ class Data {
 		
 		let downsampledData = this.downsampleSet(data, data[0].x, data[data.length - 1].x);
 		
-		console.log("ENDED UP WITH", downsampledData.length, "POINTS OF DOWNSAMPLED");
-
 		this.sets.push({
 			data,
 			downsampledData,
 			...defaultOptions,
 			...options,
 		});
-		
-		//this.updateDownsampling();
 	}
 	
 	/**
@@ -207,7 +237,10 @@ class Data {
 		if(id < 0 || id >= this.sets.length) return;
 		if(!Array.isArray(data)) return;
 		
+		let downsampledData = this.downsampleSet(data, data[0].x, data[data.length - 1].x);
+		
 		this.sets[id].data = data;
+		this.sets[id].downsampledData = downsampledData;
 	}
 	
 	/**
