@@ -1,4 +1,5 @@
 import utils from './utils';
+import fullscreenImgSrc from '../img/fullscreen.svg';
 
 class Viewport {
 	constructor(plot) {
@@ -39,6 +40,17 @@ class Viewport {
 		this.selectedY = null;
 		
 		this._BENCH = [];
+		
+		this._fullscreen = false;
+		this.fullscreenImg = new Image();
+		this.fullscreenImg.src = fullscreenImgSrc;
+		
+		window.addEventListener('resize', e => {
+			if(this._fullscreen === false || !this.plot.canvas) return;
+			
+			this.plot.canvas.width = window.innerWidth;
+			this.plot.canvas.height = window.innerHeight;
+		})
 	}
 	
 	getPlotWidth = () => this.plot.canvas.width - this.paddingLeft - this.paddingRight;
@@ -88,6 +100,34 @@ class Viewport {
 	//dataToScreenY = (d) => this._dataToScreen(d, this._minY, this._maxY, this.paddingTop + this._plotHeight, this.paddingTop);
 	//screenToDataX = (s) => this._screenToData(s, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._plotWidth);
 	//screenToDataY = (s) => this._screenToData(s, this._minY, this._maxY, this.paddingTop + this._plotHeight, this.paddingTop);
+	
+	setFullscreen = () => {
+		this._fullscreen = true;
+		
+		const { canvas } = this.plot;
+		
+		canvas.style.position = 'fixed';
+		canvas.style.top = 0;
+		canvas.style.bottom = 0;
+		
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+	}
+	
+	unsetFullscreen = () => {
+		this._fullscreen = false;
+		
+		const { canvas, options } = this.plot;
+		
+		canvas.style.position = 'unset';
+		canvas.style.top = 'unset';
+		canvas.style.bottom = 'unset';
+		
+		canvas.width = options.width;
+		canvas.height = options.height;
+	}
+	
+	toggleFullscreen = () => this._fullscreen ? this.unsetFullscreen() : this.setFullscreen();
 	
 	zoomToScreenCoords = (sStartX, sStartY, sEndX, sEndY) => {
 		if(sStartX === sEndX || sStartY === sEndY) return;
@@ -169,11 +209,14 @@ class Viewport {
 	
 	_clearRect = (ctx, x, y, w, h) => {
 		let bg = this.plot.options.backgroundColor;
+		if(this._fullscreen && (!bg || bg === 'none')) {
+			bg = '#FFF';
+		}
 		if(!bg || bg === 'none') {
 			ctx.clearRect(x, y, w, h);
 		}
 		else {
-			ctx.fillStyle = this.plot.options.backgroundColor;
+			ctx.fillStyle = bg;
 			ctx.fillRect(x, y, w, h);
 		}
 	}
@@ -486,6 +529,17 @@ class Viewport {
 			ctx.moveTo(zeroX, this.paddingTop);
 			ctx.lineTo(zeroX, this.paddingTop + this._plotHeight);
 			ctx.stroke();
+		}
+		
+		// Draw fullscreen button
+		if(this.fullscreenImg) {
+			let w = this.paddingRight - 10;
+			let h = this.paddingTop - 10;
+			let x = canvas.width - this.paddingRight + 5;
+			let y = 5;
+			
+			ctx.fillColor = 'grey'
+			ctx.drawImage(this.fullscreenImg, x, y, w, h);
 		}
 		
 		if(this.selectedX !== null && this.selectedY !== null) {

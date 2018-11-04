@@ -122,6 +122,15 @@ class Interaction {
 			this.startPan(x, y);
 		}
 		
+		// Left click
+		else if(e.button === 0) {
+			let { paddingTop, paddingRight } = this.plot.viewport;
+			
+			if(y < paddingTop && x > this.plot.canvas.width - paddingRight) {
+				this.plot.viewport.toggleFullscreen();
+			}
+		}
+		
 		// Middle click
 		else if(e.button === 1) {
 			this.startPan(x, y);
