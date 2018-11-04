@@ -93,3 +93,9 @@ plot.addEventListener('viewMoved', event => {
 1. Clone repo, run `yarn install`
 2. Start the development server with `yarn start`
 3. Create a production build with `yarn build`
+
+## Credit
+
+Downsampling algorithm provided by Sveinn Steinarsson's [Largest Triangle Three Buckets Algorithm](https://github.com/sveinn-steinarsson/flot-downsample).
+
+Fullscreen icon made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [www.flaticon.com](https://www.flaticon.com/) and is licensed under [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).

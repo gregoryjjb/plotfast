@@ -1,6 +1,10 @@
 const floor = Math.floor;
 const abs = Math.abs;
 
+/**
+ * Courtesy of Sveinn Steinarsson, original implementation here:
+ * https://github.com/sveinn-steinarsson/flot-downsample
+ */
 function largestTriangleThreeBuckets(data, threshold) {
 
     var data_length = data.length;
@@ -71,6 +75,13 @@ function largestTriangleThreeBuckets(data, threshold) {
     return sampled;
 }
 
+/**
+ * Downsample a dataset using Sveinn Steinarsson's
+ * "Largest Triangle Three Buckets" algorithm
+ * @param {[{x: number, y: number}]} data 
+ * @param {number} threshold Downsample to
+ * @return {void}
+ */
 const downsample = (data, threshold) => largestTriangleThreeBuckets(data, threshold);
 
 export default downsample;
