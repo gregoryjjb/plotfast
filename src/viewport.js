@@ -109,6 +109,8 @@ class Viewport {
 		canvas.style.position = 'fixed';
 		canvas.style.top = 0;
 		canvas.style.bottom = 0;
+		canvas.style.left = 0;
+		canvas.style.right = 0;
 		canvas.style.zIndex = Number.MAX_SAFE_INTEGER; // Big value
 		
 		canvas.width = window.innerWidth;
@@ -125,6 +127,8 @@ class Viewport {
 		canvas.style.position = 'unset';
 		canvas.style.top = 'unset';
 		canvas.style.bottom = 'unset';
+		canvas.style.left = 'unset';
+		canvas.style.right = 'unset';
 		canvas.style.zIndex = 'unset';
 		
 		canvas.width = options.width;
