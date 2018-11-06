@@ -117,6 +117,8 @@ class Viewport {
 		canvas.height = window.innerHeight;
 		
 		document.querySelector('body').appendChild(canvas);
+		
+		this._viewMoved('fullscreen');
 	}
 	
 	unsetFullscreen = () => {
@@ -135,6 +137,8 @@ class Viewport {
 		canvas.height = options.height;
 		
 		this.plot.containerRef.appendChild(canvas);
+		
+		this._viewMoved('fullscreen');
 	}
 	
 	toggleFullscreen = () => this._fullscreen ? this.unsetFullscreen() : this.setFullscreen();
