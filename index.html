@@ -33,12 +33,12 @@
         
         var container = document.getElementById("container");
         var plot = new Plotfast(container, { logging: true, width: 640, height: 480 });
-        var data = plot.generateData(100000);
+        var data = plot.generateData(1000000);
         plot.addDataset(data,  { color: getRandomColor() });
         plot.start();
 
         document.querySelector("#generate").addEventListener("click", function(e) {
-            plot.addDataset(plot.generateData(100000), { color: getRandomColor() })
+            plot.addDataset(plot.generateData(1000000), { color: getRandomColor() })
             plot.fitViewToData();
         });
 

@@ -2,6 +2,8 @@
 
 Canvas plotting library focused on performance.
 
+[Check it out with a million points here!](https://focused-almeida-5122b7.netlify.com/)
+
 ## Usage
 
 Once it goes on npm:
