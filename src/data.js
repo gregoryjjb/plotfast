@@ -178,7 +178,12 @@ class Data {
 		
 		for(let i = 0; i < this.sets.length; i++) {
 			let set = this.sets[i];
-			set.downsampledData = this.downsampleSet(set.data);
+			if(set.downsample === true) {
+				set.downsampledData = this.downsampleSet(set.data);
+			}
+			else {
+				set.downsampledData = set.data;
+			}
 		}
 		
 		let t1 = performance.now();
@@ -214,7 +219,12 @@ class Data {
 			return 0;
 		});
 		
-		let downsampledData = this.downsampleSet(data, data[0].x, data[data.length - 1].x);
+		// Get default downsample option from global options
+		if(options.downsample === undefined) {
+			options.downsample = this.plot.options.downsample;
+		}
+		
+		let downsampledData = options.downsample ? this.downsampleSet(data, data[0].x, data[data.length - 1].x) : data;
 		
 		this.sets.push({
 			data,
@@ -237,7 +247,7 @@ class Data {
 		if(id < 0 || id >= this.sets.length) return;
 		if(!Array.isArray(data)) return;
 		
-		let downsampledData = this.downsampleSet(data, data[0].x, data[data.length - 1].x);
+		let downsampledData = this.sets[id].downsample ? this.downsampleSet(data, data[0].x, data[data.length - 1].x) : data;
 		
 		this.sets[id].data = data;
 		this.sets[id].downsampledData = downsampledData;

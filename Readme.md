@@ -70,14 +70,37 @@ plot.removeDataset();
 ```javascript
 var plot = new Plotfast(container, {
     logging: true,
+    
+    // Dimensions of the canvas
     width: 640,
     height: 480,
+    
+    // Labels to display on the axes
     xLabel: 'X axis',
     yLabel: 'Y axis',
+    
+    // Colors
     lineColor: 'lightgrey',
     textColor: 'black',
     backgroundColor: 'none',
+    
+    // Downsample data to improve performance
+    downsample: true,
 });
+```
+
+### Data Options
+
+```javascript
+var data = [{x: 1, y: 0}, {x: 2, y: 5}];
+
+plot.addDataset(data, {
+    name: 'Dataset',
+    color: 'black',
+    
+    // Will match the plot's downsample setting by default
+    downsample: true,
+})
 ```
 
 ### Events
