@@ -1,5 +1,6 @@
 import utils from './utils';
-import fullscreenImgSrc from '../img/fullscreen.svg';
+import fullscreenImgSrc from '../img/baseline-fullscreen-24px.svg';
+import cameraImgSrc from '../img/outline-camera_alt-24px.svg';
 
 class Viewport {
 	constructor(plot) {
@@ -42,8 +43,17 @@ class Viewport {
 		this._BENCH = [];
 		
 		this._fullscreen = false;
+		
 		this.fullscreenImg = new Image();
 		this.fullscreenImg.src = fullscreenImgSrc;
+		
+		this.cameraImg = new Image();
+		this.cameraImg.src = cameraImgSrc;
+		
+		this.iconSize = 0;
+		this.iconY = 0;
+		this.fullscreenIconX = 0;
+		this.cameraIconX = 0;
 		
 		window.addEventListener('resize', e => {
 			if(this._fullscreen === false || !this.plot.canvas) return;
@@ -67,6 +77,11 @@ class Viewport {
 		
 		this._scaleX = (this.endX - this.startX) / this._plotWidth;
 		this._scaleY = (this.endY - this.startY) / this._plotHeight;
+		
+		this.iconSize = Math.floor(this.paddingTop - 10);
+		this.iconY = 5;
+		this.fullscreenIconX = Math.floor(this.plot.canvas.width - this.iconSize - 5) + 0.5;
+		this.cameraIconX = Math.floor(this.fullscreenIconX - this.iconSize - 5) + 0.5;
 	}
 	
 	setOffset = (x, y) => {
@@ -327,6 +342,9 @@ class Viewport {
 		// Clear
 		this._clearRect(ctx, 0, 0, canvas.width, canvas.height);
 		
+		ctx.save();
+		ctx.translate(0.5, 0.5);
+		
 		// Draw lines to points
 		/*data.filter(d => (
 			d.x > this._minX &&
@@ -513,10 +531,10 @@ class Viewport {
 		ctx.lineWidth = "1";
 		ctx.setLineDash([]);
 		ctx.strokeRect(
-			this.paddingLeft - 0.5,
-			this.paddingTop - 0.5,
-			this._plotWidth + 0.5,
-			this._plotHeight + 0.5,
+			this.paddingLeft,
+			this.paddingTop,
+			this._plotWidth,
+			this._plotHeight,
 		);
 
 		// Draw zoom box (if dragging zoom)
@@ -555,14 +573,24 @@ class Viewport {
 		
 		// Draw fullscreen button
 		if(this.fullscreenImg) {
-			let w = this.paddingRight - 10;
-			let h = this.paddingTop - 10;
-			let size = Math.min(w, h);
-			let x = canvas.width + (this.paddingRight - size) / 2 - this.paddingRight;
-			let y = (this.paddingTop - size) / 2;
-			
-			ctx.fillColor = 'grey'
-			ctx.drawImage(this.fullscreenImg, x, y, size, size);
+			ctx.drawImage(
+				this.fullscreenImg,
+				this.fullscreenIconX,
+				this.iconY,
+				this.iconSize,
+				this.iconSize
+			);
+		}
+		
+		// Draw camera button
+		if(this.cameraImg) {
+			ctx.drawImage(
+				this.cameraImg,
+				this.cameraIconX,
+				this.iconY,
+				this.iconSize,
+				this.iconSize
+			);
 		}
 		
 		if(this.selectedX !== null && this.selectedY !== null) {
@@ -610,8 +638,20 @@ class Viewport {
 			ctx.fillText(string2, cornerX + padding, cornerY + h - padding, maxWidth);
 		}
 		
+		ctx.restore();
+		
 		// Next frame
 		requestAnimationFrame(this.render);
+	}
+	
+	takeSnapshot = () => {
+		let src = this.plot.canvas.toDataURL(); //('image/png').replace('image/png', 'image/octet-stream');
+		let link = document.createElement('a');
+		link.href = src;
+		link.download = "myplot.png";
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
 	}
 }
 

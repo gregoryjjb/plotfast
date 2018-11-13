@@ -55,6 +55,8 @@ class Plotfast {
 	}
 	
 	downsample = (d, n) => downsample(d, n); // processData(d, n)
+	
+	takeSnapshot = () => this.plot.viewport.takeSnapshot();
 }
 
 export default Plotfast;

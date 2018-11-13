@@ -123,4 +123,4 @@ plot.addEventListener('viewMoved', event => {
 
 Downsampling algorithm provided by Sveinn Steinarsson's [Largest Triangle Three Buckets Algorithm](https://github.com/sveinn-steinarsson/flot-downsample).
 
-Fullscreen icon made by [Vectors Market](https://www.flaticon.com/authors/vectors-market) from [www.flaticon.com](https://www.flaticon.com/) and is licensed under [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/).
+Icons are from Google's [Material Icons](https://material.io/tools/icons/?style=baseline).

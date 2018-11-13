@@ -124,10 +124,15 @@ class Interaction {
 		
 		// Left click
 		else if(e.button === 0) {
-			let { paddingTop, paddingRight } = this.plot.viewport;
+			let { iconY, iconSize, fullscreenIconX, cameraIconX } = this.plot.viewport;
 			
-			if(y < paddingTop && x > this.plot.canvas.width - paddingRight) {
-				this.plot.viewport.toggleFullscreen();
+			if(y > iconY && y < iconY + iconSize) {
+				if(x > fullscreenIconX && x < fullscreenIconX + iconSize) {
+					this.plot.viewport.toggleFullscreen();
+				}
+				else if(x > cameraIconX && x < cameraIconX + iconSize) {
+					this.plot.viewport.takeSnapshot();
+				}
 			}
 		}
 		
