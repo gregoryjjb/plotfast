@@ -1,29 +1,35 @@
+import { IPlot } from './Plotfast';
 import { benchmark } from './utils';
 
 class Interaction {
+	
+	plot: IPlot;
+	
+	// Key status
+	shiftDown: boolean;
+	ctrlDown: boolean;
+	
+	// Wheel zoom
+	zoomMultiplier: number = 0.75;
+	
+	// Box zoom
+	draggingZoom: boolean = false;
+	zoomStartX: number = 0;
+	zoomStartY: number = 0;
+	zoomDeltaX: number = 0;
+	zoomDeltaY: number = 0;
+	
+	draggingPan: boolean = false;
+	panStartX: number = 0;
+	panStartY: number = 0;
+	panDeltaX: number = 0;
+	panDeltaY: number = 0;
+	
 	constructor(plot) {
 		this.plot = plot;
 		
-		// Key status
-		this.shiftDown = false;
-		this.ctrlDown = false;
-		
 		// Wheel zoom
 		this.zoomMultiplier = 0.75;
-		
-		// Box zoom
-		this.draggingZoom = false;
-		this.zoomStartX = 0;
-		this.zoomStartY = 0;
-		this.zoomDeltaX = 0;
-		this.zoomDeltaY = 0;
-		
-		// Pan
-		this.draggingPan = false;
-		this.panStartX = 0;
-		this.panStartY = 0;
-		this.panDeltaX = 0;
-		this.panDeltaY = 0;
 		
 		// Event listeners
 		this.plot.canvas.addEventListener('mousedown', this.handleMouseDown);
@@ -63,7 +69,7 @@ class Interaction {
 		this.zoomDeltaY = 0;
 	}
 	
-	cancelBoxZoom = (x, y) => {
+	cancelBoxZoom = () => {
 		this.draggingZoom = false;
 		this.zoomStartX = 0;
 		this.zoomStartY = 0;

@@ -1,3 +1,4 @@
+import { IPlot } from './Plotfast'
 import downsample from './downsample';
 import { clamp } from './utils';
 
@@ -6,7 +7,24 @@ const defaultOptions = {
 	color: 'black',
 }
 
+interface IPoint {
+	x: number,
+	y: number,
+}
+
+interface IDataset {
+	name: string,
+	data: Array<IPoint>,
+	downsampledData: Array<IPoint>,
+	downsample: boolean,
+}
+
 class Data {
+	
+	plot: IPlot;
+	sets: Array<IDataset>;
+	_timeout: any;
+	
 	constructor(plot) {
 		this.plot = plot;
 		
@@ -35,7 +53,7 @@ class Data {
 		//console.log("Hi", hi, "Lo", lo, "Close", cl);
 	}
 	
-	downsampleSet = (data, min, max, resolution) => {
+	downsampleSet = (data: Array<IPoint>, min?: number, max?: number, resolution?: number) => {
 		if(min === undefined) min = this.plot.viewport.startX;
 		if(max === undefined) max = this.plot.viewport.endX;
 		if(resolution === undefined) resolution = this.plot.viewport.getPlotWidth();

@@ -1,62 +1,69 @@
 import utils from './utils';
-import fullscreenImgSrc from '../img/baseline-fullscreen-24px.svg';
-import cameraImgSrc from '../img/outline-camera_alt-24px.svg';
+//import fullscreenImgSrc from '../img/baseline-fullscreen-24px.svg';
+//import cameraImgSrc from '../img/outline-camera_alt-24px.svg';
+
+import { IPlot } from './Plotfast';
 
 class Viewport {
+	plot: IPlot;
+	
+	// Final positions, in data coords, after offsetting
+	startX: number = 0;
+	startY: number = 0;
+	endX: number = 20;
+	endY: number = 20;
+	
+	private offsetX: number = 0;
+	private offsetY: number = 0;
+	
+	// Position without offsetting
+	private minX: number = 0;
+	private maxX: number = 0;
+	private minY: number = 0;
+	private maxY: number = 0;
+	
+	// Padding
+	readonly paddingLeft: number = 70;
+	readonly paddingRight: number = 30;
+	readonly paddingTop: number = 40;
+	readonly paddingBottom: number = 50;
+	
+	// Calculated once per frame
+	private scaleX: number = 0;
+	private scaleY: number = 0;
+	private plotWidth: number = 0;
+	private plotHeight: number = 0;
+	
+	selectedX: number = null;
+	selectedY: number = null;
+	
+	// Benchmarks
+	private BENCH: Array<number> = [];
+	
+	// Is fullscreen or not
+	private fullscreen: boolean = false;
+	
+	// Icon images
+	private fullscreenImg: HTMLImageElement;
+	private cameraImg: HTMLImageElement;
+	
+	// Icons
+	iconSize: number = 0;
+	iconY: number = 0;
+	fullscreenIconX: number = 0;
+	cameraIconX: number = 0;
+	
 	constructor(plot) {
 		this.plot = plot;
 		
-		this.xPos = 0;
-		this.yPos = -100;
-
-		this.startX = 0;
-		this.endX = 20;
-		this.startY = 0;
-		this.endY = 20;
-		
-		this._offsetX = 0;
-		this._offsetY = 0;
-		
-		// Don't set these directly
-		this._minX = 0;
-		this._maxX = 0;
-		this._minY = 0;
-		this._maxY = 0;
-
-		this.paddingLeft = 70;
-		this.paddingRight = 30;
-
-		this.paddingTop = 40;
-		this.paddingBottom = 50;
-		
-		// DEFNINTELY don't set these directly
-		this._scaleX = 0;
-		this._scaelY = 0;
-		this._plotWidth = 0;
-		this._plotHeight = 0;
-		
-		this.plotWidth = 0;
-		
-		this.selectedX = null;
-		this.selectedY = null;
-		
-		this._BENCH = [];
-		
-		this._fullscreen = false;
-		
 		this.fullscreenImg = new Image();
-		this.fullscreenImg.src = fullscreenImgSrc;
+		//this.fullscreenImg.src = fullscreenImgSrc;
 		
 		this.cameraImg = new Image();
-		this.cameraImg.src = cameraImgSrc;
-		
-		this.iconSize = 0;
-		this.iconY = 0;
-		this.fullscreenIconX = 0;
-		this.cameraIconX = 0;
+		//this.cameraImg.src = cameraImgSrc;
 		
 		window.addEventListener('resize', e => {
-			if(this._fullscreen === false || !this.plot.canvas) return;
+			if(this.fullscreen === false || !this.plot.canvas) return;
 			
 			this.plot.canvas.width = window.innerWidth;
 			this.plot.canvas.height = window.innerHeight;
@@ -67,16 +74,16 @@ class Viewport {
 	getPlotHeight = () => this.plot.canvas.height - this.paddingTop - this.paddingBottom;
 	
 	_updateCalculations = () => {
-		this._minX = this.startX + this._offsetX;
-		this._maxX = this.endX + this._offsetX;
-		this._minY = this.startY + this._offsetY;
-		this._maxY = this.endY + this._offsetY;
+		this.minX = this.startX + this.offsetX;
+		this.maxX = this.endX + this.offsetX;
+		this.minY = this.startY + this.offsetY;
+		this.maxY = this.endY + this.offsetY;
 
-		this._plotWidth = this.plot.canvas.width - this.paddingLeft - this.paddingRight;
-		this._plotHeight = this.plot.canvas.height - this.paddingTop - this.paddingBottom;
+		this.plotWidth = this.plot.canvas.width - this.paddingLeft - this.paddingRight;
+		this.plotHeight = this.plot.canvas.height - this.paddingTop - this.paddingBottom;
 		
-		this._scaleX = (this.endX - this.startX) / this._plotWidth;
-		this._scaleY = (this.endY - this.startY) / this._plotHeight;
+		this.scaleX = (this.endX - this.startX) / this.plotWidth;
+		this.scaleY = (this.endY - this.startY) / this.plotHeight;
 		
 		this.iconSize = Math.floor(this.paddingTop - 10);
 		this.iconY = 5;
@@ -85,18 +92,18 @@ class Viewport {
 	}
 	
 	setOffset = (x, y) => {
-		this._offsetX = -x * ((this.endX - this.startX) / (this.paddingLeft - this.paddingLeft + this._plotWidth));
-		this._offsetY = y * ((this.endY - this.startY) / this._plotHeight);
+		this.offsetX = -x * ((this.endX - this.startX) / (this.paddingLeft - this.paddingLeft + this.plotWidth));
+		this.offsetY = y * ((this.endY - this.startY) / this.plotHeight);
 	}
 	
 	applyOffset = () => {
-		this.startX += this._offsetX;
-		this.endX += this._offsetX;
-		this.startY += this._offsetY;
-		this.endY += this._offsetY;
+		this.startX += this.offsetX;
+		this.endX += this.offsetX;
+		this.startY += this.offsetY;
+		this.endY += this.offsetY;
 		
-		this._offsetX = 0;
-		this._offsetY = 0;
+		this.offsetX = 0;
+		this.offsetY = 0;
 		
 		this._viewMoved();
 	}
@@ -104,29 +111,29 @@ class Viewport {
 	_dataToScreen = (d, dMin, dMax, sMin, sMax) => (d - dMin) * ((sMax - sMin) / (dMax - dMin)) + sMin;
 	_screenToData = (s, dMin, dMax, sMin, sMax) => (s - sMin) * ((dMax - dMin) / (sMax - sMin)) + dMin;
 
-	dataToScreenX = (d) => (d - this._minX) / this._scaleX + this.paddingLeft;
-	dataToScreenY = (d) => (d - this._minY) / this._scaleY * -1 + this.paddingTop + this._plotHeight;
-	screenToDataX = (s) => (s - this.paddingLeft) * this._scaleX + this._minX; 
-	screenToDataY = (s) => (this.paddingTop + this._plotHeight - s) * this._scaleY + this._minY;
+	dataToScreenX = (d) => (d - this.minX) / this.scaleX + this.paddingLeft;
+	dataToScreenY = (d) => (d - this.minY) / this.scaleY * -1 + this.paddingTop + this.plotHeight;
+	screenToDataX = (s) => (s - this.paddingLeft) * this.scaleX + this.minX; 
+	screenToDataY = (s) => (this.paddingTop + this.plotHeight - s) * this.scaleY + this.minY;
 	
 	// Old (slower?) way
 	// Yep it's about 8% slower
-	//dataToScreenX = (d) => this._dataToScreen(d, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._plotWidth);
-	//dataToScreenY = (d) => this._dataToScreen(d, this._minY, this._maxY, this.paddingTop + this._plotHeight, this.paddingTop);
-	//screenToDataX = (s) => this._screenToData(s, this._minX, this._maxX, this.paddingLeft, this.paddingLeft + this._plotWidth);
-	//screenToDataY = (s) => this._screenToData(s, this._minY, this._maxY, this.paddingTop + this._plotHeight, this.paddingTop);
+	//dataToScreenX = (d) => this._dataToScreen(d, this.minX, this.maxX, this.paddingLeft, this.paddingLeft + this.plotWidth);
+	//dataToScreenY = (d) => this._dataToScreen(d, this.minY, this.maxY, this.paddingTop + this.plotHeight, this.paddingTop);
+	//screenToDataX = (s) => this._screenToData(s, this.minX, this.maxX, this.paddingLeft, this.paddingLeft + this.plotWidth);
+	//screenToDataY = (s) => this._screenToData(s, this.minY, this.maxY, this.paddingTop + this.plotHeight, this.paddingTop);
 	
 	setFullscreen = () => {
-		this._fullscreen = true;
+		this.fullscreen = true;
 		
 		const { canvas } = this.plot;
 		
 		canvas.style.position = 'fixed';
-		canvas.style.top = 0;
-		canvas.style.bottom = 0;
-		canvas.style.left = 0;
-		canvas.style.right = 0;
-		canvas.style.zIndex = Number.MAX_SAFE_INTEGER; // Big value
+		canvas.style.top = '0';
+		canvas.style.bottom = '0';
+		canvas.style.left = '0';
+		canvas.style.right = '0';
+		canvas.style.zIndex = Number.MAX_VALUE.toString(); // Big value
 		
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
@@ -137,7 +144,7 @@ class Viewport {
 	}
 	
 	unsetFullscreen = () => {
-		this._fullscreen = false;
+		this.fullscreen = false;
 		
 		const { canvas, options } = this.plot;
 		
@@ -156,7 +163,7 @@ class Viewport {
 		this._viewMoved('fullscreen');
 	}
 	
-	toggleFullscreen = () => this._fullscreen ? this.unsetFullscreen() : this.setFullscreen();
+	toggleFullscreen = () => this.fullscreen ? this.unsetFullscreen() : this.setFullscreen();
 	
 	zoomToScreenCoords = (sStartX, sStartY, sEndX, sEndY) => {
 		if(sStartX === sEndX || sStartY === sEndY) return;
@@ -222,7 +229,7 @@ class Viewport {
 		this._viewMoved('fit');
 	}
 	
-	_viewMoved = (type) => {
+	_viewMoved = (type?: string) => {
 		this.plot.events.fireEvent('viewMoved', {
 			type: type,
 			x1: this.startX,
@@ -238,7 +245,7 @@ class Viewport {
 	
 	_clearRect = (ctx, x, y, w, h) => {
 		let bg = this.plot.options.backgroundColor;
-		if(this._fullscreen && (!bg || bg === 'none')) {
+		if(this.fullscreen && (!bg || bg === 'none')) {
 			bg = '#FFF';
 		}
 		if(!bg || bg === 'none') {
@@ -347,10 +354,10 @@ class Viewport {
 		
 		// Draw lines to points
 		/*data.filter(d => (
-			d.x > this._minX &&
-			d.x < this._maxX &&
-			d.y > this._minY &&
-			d.y < this._maxY
+			d.x > this.minX &&
+			d.x < this.maxX &&
+			d.y > this.minY &&
+			d.y < this.maxY
 		)).map(d => {
 			//let ssd = this.dataToScreenSpace(d);
 			let dx = this.dataToScreenX(d.x);
@@ -376,10 +383,10 @@ class Viewport {
 				let d = data[i];
 				
 				if(
-					d.x >= this._minX &&
-					d.x <= this._maxX &&
-					d.y >= this._minY &&
-					d.y <= this._maxY
+					d.x >= this.minX &&
+					d.x <= this.maxX &&
+					d.y >= this.minY &&
+					d.y <= this.maxY
 				) {
 					// We are in the visible area, draw the point
 					nPoints++;
@@ -428,12 +435,12 @@ class Viewport {
 
 		if(DEBUG) {
 			let t1 = performance.now();
-			if(this._BENCH.length >= 30) {
-				let avg = this._BENCH.reduce((acc, el) => acc + el) / this._BENCH.length;
+			if(this.BENCH.length >= 30) {
+				let avg = this.BENCH.reduce((acc, el) => acc + el) / this.BENCH.length;
 				console.log(`Drawing ${nPoints} points took %c${avg.toPrecision(3)}ms`, "color: blue;");
-				this._BENCH = [];
+				this.BENCH = [];
 			}
-			this._BENCH.push(t1 - t0);
+			this.BENCH.push(t1 - t0);
 		}
 		
 		// Clear out margins in case of data hanging off the edge
@@ -443,8 +450,8 @@ class Viewport {
 		this._clearRect(ctx, canvas.width, 0, -this.paddingRight, canvas.height);
 		
 		// Axis labels (todo)
-		let rangeX = this._maxX - this._minX;
-		let rangeY = this._maxY - this._minY;
+		let rangeX = this.maxX - this.minX;
+		let rangeY = this.maxY - this.minY;
 		let steps = 5;
 		let stepSizeX = Number(Math.floor(rangeX / steps).toPrecision(1))
 		let stepSizeY = Number(Math.floor(rangeY / steps).toPrecision(1))
@@ -528,13 +535,13 @@ class Viewport {
 		
 		// Draw bounds around graph area (temporary?)
 		ctx.strokeStyle = options.lineColor || 'lightgrey';
-		ctx.lineWidth = "1";
+		ctx.lineWidth = 1;
 		ctx.setLineDash([]);
 		ctx.strokeRect(
 			this.paddingLeft,
 			this.paddingTop,
-			this._plotWidth,
-			this._plotHeight,
+			this.plotWidth,
+			this.plotHeight,
 		);
 
 		// Draw zoom box (if dragging zoom)
@@ -556,18 +563,18 @@ class Viewport {
 		ctx.strokeStyle = options.lineColor || 'lightgrey';
 		
 		//  Draw x axis
-		if(this._minY < 0 && this._maxY > 0) {
+		if(this.minY < 0 && this.maxY > 0) {
 			ctx.beginPath();
 			ctx.moveTo(this.paddingLeft, zeroY);
-			ctx.lineTo(this.paddingLeft + this._plotWidth, zeroY);
+			ctx.lineTo(this.paddingLeft + this.plotWidth, zeroY);
 			ctx.stroke();
 		}
 		
 		// Draw y axis
-		if(this._minX < 0 && this._maxX > 0) {
+		if(this.minX < 0 && this.maxX > 0) {
 			ctx.beginPath();
 			ctx.moveTo(zeroX, this.paddingTop);
-			ctx.lineTo(zeroX, this.paddingTop + this._plotHeight);
+			ctx.lineTo(zeroX, this.paddingTop + this.plotHeight);
 			ctx.stroke();
 		}
 		

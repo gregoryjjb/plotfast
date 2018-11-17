@@ -1,4 +1,9 @@
+import { IPlot } from './Plotfast';
+
 class Events {
+    plot: IPlot;
+    listeners: any;
+    
     constructor(plot) {
         this.plot = plot;
 
@@ -12,7 +17,7 @@ class Events {
      * @param {string} name Name of the event to listen to
      * @param {function} callback Event callback
      */
-    addListener = (name, callback) => {
+    addListener = (name: string, callback) => {
         if(!name || typeof name !== 'string') {
             throw new Error('Name of event must be a string');
         }

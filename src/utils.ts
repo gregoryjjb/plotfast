@@ -1,6 +1,7 @@
+
 // Log10 Polyfill
 // Courtesy of MDN
-Math.log10 = Math.log10 || function (x) {
+const log10 = function (x: number): number {
 	return Math.log(x) * Math.LOG10E;
 };
 
@@ -8,8 +9,8 @@ Math.log10 = Math.log10 || function (x) {
  * Get the number of digits from a number
  * @param {number} x Number to examine
  */
-export const numDigits = x => {
-	return Math.max(Math.floor(Math.log10(Math.abs(x))), 0) + 1;
+export const numDigits = (x: number) => {
+	return Math.max(Math.floor(log10(Math.abs(x))), 0) + 1;
 }
 
 /**
