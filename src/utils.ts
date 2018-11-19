@@ -25,11 +25,11 @@ export const round = (x, n) => {
 	return Math.round(x / roundTo) * roundTo;
 }
 
-export const clamp = (n, min, max) => {
+export const clamp = (n: number, min: number, max: number) => {
 	return Math.min(Math.max(n, min), max);
 }
 
-export const benchmark = (f, args, name) => {
+export const benchmark = (f: Function, args: Array<any>, name: string) => {
 	const t0 = performance.now();
 	const result = f(...args);
 	const t1 = performance.now();
