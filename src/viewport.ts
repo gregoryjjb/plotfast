@@ -3,6 +3,7 @@ import utils from './utils';
 //import cameraImgSrc from '../img/outline-camera_alt-24px.svg';
 
 import { IPlot } from './Plotfast';
+import { IPoint } from './data';
 
 class Viewport {
 	plot: IPlot;
@@ -53,7 +54,7 @@ class Viewport {
 	fullscreenIconX: number = 0;
 	cameraIconX: number = 0;
 	
-	constructor(plot) {
+	constructor(plot: IPlot) {
 		this.plot = plot;
 		
 		this.fullscreenImg = new Image();
@@ -91,7 +92,7 @@ class Viewport {
 		this.cameraIconX = Math.floor(this.fullscreenIconX - this.iconSize - 5) + 0.5;
 	}
 	
-	setOffset = (x, y) => {
+	setOffset = (x: number, y: number) => {
 		this.offsetX = -x * ((this.endX - this.startX) / (this.paddingLeft - this.paddingLeft + this.plotWidth));
 		this.offsetY = y * ((this.endY - this.startY) / this.plotHeight);
 	}
@@ -108,13 +109,13 @@ class Viewport {
 		this._viewMoved();
 	}
 
-	_dataToScreen = (d, dMin, dMax, sMin, sMax) => (d - dMin) * ((sMax - sMin) / (dMax - dMin)) + sMin;
-	_screenToData = (s, dMin, dMax, sMin, sMax) => (s - sMin) * ((dMax - dMin) / (sMax - sMin)) + dMin;
+	_dataToScreen = (d: number, dMin: number, dMax: number, sMin: number, sMax: number): number => (d - dMin) * ((sMax - sMin) / (dMax - dMin)) + sMin;
+	_screenToData = (s: number, dMin: number, dMax: number, sMin: number, sMax: number): number => (s - sMin) * ((dMax - dMin) / (sMax - sMin)) + dMin;
 
-	dataToScreenX = (d) => (d - this.minX) / this.scaleX + this.paddingLeft;
-	dataToScreenY = (d) => (d - this.minY) / this.scaleY * -1 + this.paddingTop + this.plotHeight;
-	screenToDataX = (s) => (s - this.paddingLeft) * this.scaleX + this.minX; 
-	screenToDataY = (s) => (this.paddingTop + this.plotHeight - s) * this.scaleY + this.minY;
+	dataToScreenX = (d: number): number => (d - this.minX) / this.scaleX + this.paddingLeft;
+	dataToScreenY = (d: number): number => (d - this.minY) / this.scaleY * -1 + this.paddingTop + this.plotHeight;
+	screenToDataX = (s: number): number => (s - this.paddingLeft) * this.scaleX + this.minX; 
+	screenToDataY = (s: number): number => (this.paddingTop + this.plotHeight - s) * this.scaleY + this.minY;
 	
 	// Old (slower?) way
 	// Yep it's about 8% slower
@@ -165,7 +166,7 @@ class Viewport {
 	
 	toggleFullscreen = () => this.fullscreen ? this.unsetFullscreen() : this.setFullscreen();
 	
-	zoomToScreenCoords = (sStartX, sStartY, sEndX, sEndY) => {
+	zoomToScreenCoords = (sStartX: number, sStartY: number, sEndX: number, sEndY: number) => {
 		if(sStartX === sEndX || sStartY === sEndY) return;
 		
 		let x1 = this.screenToDataX(sStartX);
@@ -182,7 +183,7 @@ class Viewport {
 		this._viewMoved();
 	}
 	
-	zoom = (amount, screenX, screenY) => {
+	zoom = (amount: number, screenX: number, screenY: number) => {
 		let anchorX = this.screenToDataX(screenX);
 		let anchorY = this.screenToDataY(screenY);
 		
@@ -243,7 +244,7 @@ class Viewport {
 		requestAnimationFrame(this.render);
 	}
 	
-	_clearRect = (ctx, x, y, w, h) => {
+	_clearRect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
 		let bg = this.plot.options.backgroundColor;
 		if(this.fullscreen && (!bg || bg === 'none')) {
 			bg = '#FFF';
@@ -257,13 +258,13 @@ class Viewport {
 		}
 	}
 	
-	distance = (p1, p2) => {
+	distance = (p1: IPoint, p2: IPoint) => {
 		let dx = Math.abs(p1.x - p2.x);
 		let dy = Math.abs(p1.y - p2.y);
 		return Math.sqrt(dx*dx + dy*dy);
 	}
 	
-	findUnderMouse = (msx, msy) => {
+	findUnderMouse = (msx: number, msy: number) => {
 		if(
 			msx === null ||
 			msx < this.paddingLeft ||
@@ -289,7 +290,7 @@ class Viewport {
 		
 		let mouseScreenPoint = { x: msx, y: msy };
 		
-		let nearestPoint = null;
+		let nearestPoint: IPoint = null;
 		let smallestDistance = Number.MAX_VALUE;
 		
 		sets.forEach(set => {

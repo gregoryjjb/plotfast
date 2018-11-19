@@ -2,37 +2,43 @@ import { IPlot } from './Plotfast'
 import downsample from './downsample';
 import { clamp } from './utils';
 
-const defaultOptions = {
+const defaultOptions: IDatasetOptions = {
 	name: 'Dataset',
 	color: 'black',
 }
 
-interface IPoint {
+export interface IPoint {
 	x: number,
 	y: number,
 }
 
-interface IDataset {
+interface IDatasetOptions {
 	name: string,
-	data: Array<IPoint>,
-	downsampledData: Array<IPoint>,
-	downsample: boolean,
+	downsample?: boolean,
+	color: string,
+}
+
+interface IDatasetOptionsParams extends Partial<IDatasetOptions> {};
+
+interface IDataset extends IDatasetOptions {
+	data: IPoint[],
+	downsampledData: IPoint[],
 }
 
 class Data {
 	
 	plot: IPlot;
-	sets: Array<IDataset>;
+	sets: IDataset[];
 	_timeout: any;
 	
-	constructor(plot) {
+	constructor(plot: IPlot) {
 		this.plot = plot;
 		
 		this.sets = [];
 		
 		this._timeout = null;
 		
-		this.plot.events.addListener('viewMoved', e => {
+		this.plot.events.addListener('viewMoved', (e: any) => {
 			if(e.x1 === e.x2) return;
 			
 			if(e.type === 'zoom') {
@@ -53,7 +59,7 @@ class Data {
 		//console.log("Hi", hi, "Lo", lo, "Close", cl);
 	}
 	
-	downsampleSet = (data: Array<IPoint>, min?: number, max?: number, resolution?: number) => {
+	downsampleSet = (data: IPoint[], min?: number, max?: number, resolution?: number): IPoint[] => {
 		if(min === undefined) min = this.plot.viewport.startX;
 		if(max === undefined) max = this.plot.viewport.endX;
 		if(resolution === undefined) resolution = this.plot.viewport.getPlotWidth();
@@ -91,7 +97,7 @@ class Data {
 	/**
 	 * @deprecated Use subsection instead
 	 */
-	filter = (data, min, max) => {
+	filter = (data: IPoint[], min: number, max: number): IPoint[] => {
 		let arr = [];
 		for(let i = 0; i < data.length; i++) {
 			if(data[i].x > min && data[i].x < max) arr.push(data[i]);
@@ -106,7 +112,7 @@ class Data {
 	 * @param {number} max Maximum data value
 	 * @param {bool} [includeOuter=false] Include one extra point on each side just outside the range
 	 */
-	subsection = (data, min, max, includeOuter = false) => {
+	subsection = (data: IPoint[], min: number, max: number, includeOuter: boolean = false): IPoint[] => {
 		if(min > max) return [];
 		
 		let start = this.binarySearch(data, min, includeOuter ? 0 : 1);
@@ -127,7 +133,7 @@ class Data {
 	 * @param {number} [hilo=0] -1: closest lower, 1: closest higher, 0: closest
 	 * @return {number} The index of the point, or -1 if the point wasn't found
 	 */
-	binarySearch = (data, value, hilo = 0) => {
+	binarySearch = (data: IPoint[], value: number, hilo: number = 0): number => {
 		const max = data.length - 1;
 		
 		if(data.length === 0) {
@@ -144,7 +150,7 @@ class Data {
 		let start = 0;
 		let stop = max;
 		
-		const pick = (i1, i2) => {
+		const pick = (i1: number, i2: number) => {
 			let val1 = data[i1].x;
 			let val2 = data[i2].x;
 			if(hilo === 1) {
@@ -187,7 +193,7 @@ class Data {
 	 * @param {number} min Start of range
 	 * @param {number} max End of range
 	 */
-	updateDownsampling = (min, max) => {
+	updateDownsampling = (min?: number, max?: number) => {
 		if(min === undefined) min = this.plot.viewport.startX;
 		if(max === undefined) max = this.plot.viewport.endX;
 		
@@ -218,7 +224,7 @@ class Data {
 	 * @param {string} options.color Color of the set
 	 * @param {string} options.name Name of the set
 	 */
-	addDataset = (data, options) => {
+	addDataset = (data: IPoint[], options: IDatasetOptionsParams) => {
 		if(!Array.isArray(data)) throw new Error("Dataset must be an array");
 
 		for(let i = 0; i < data.length; i++) {
@@ -259,7 +265,7 @@ class Data {
 	 * @param {number} data[].x X coordinate of point
 	 * @param {number} data[].y Y coordinate of point
 	 */
-	updateDataset = (id, data) => {
+	updateDataset = (id: string | number, data: IPoint[]) => {
 		if(id === undefined) return;
 		if(typeof id !== 'number') return;
 		if(id < 0 || id >= this.sets.length) return;
@@ -275,7 +281,7 @@ class Data {
 	 * Remove a dataset from the plot
 	 * @param {string | number} id The index or name of the dataset to remove
 	 */
-	removeDataset = id => {
+	removeDataset = (id: string | number) => {
 		if(id === undefined) {
 			this.sets = [];
 		}

@@ -25,7 +25,7 @@ class Interaction {
 	panDeltaX: number = 0;
 	panDeltaY: number = 0;
 	
-	constructor(plot) {
+	constructor(plot: IPlot) {
 		this.plot = plot;
 		
 		// Wheel zoom
@@ -40,18 +40,18 @@ class Interaction {
 		window.addEventListener('keyup', this.handleKeyup);
 	}
 	
-	startBoxZoom = (x, y) => {
+	startBoxZoom = (x: number, y: number) => {
 		this.draggingZoom = true;
 		this.zoomStartX = x;
 		this.zoomStartY = y;
 	}
 	
-	updateBoxZoom = (x, y) => {
+	updateBoxZoom = (x: number, y: number) => {
 		this.zoomDeltaX = x - this.zoomStartX;
 		this.zoomDeltaY = y - this.zoomStartY;
 	}
 	
-	finishBoxZoom = (x, y) => {
+	finishBoxZoom = (x: number, y: number) => {
 		if(!this.draggingZoom) return;
 		
 		this.draggingZoom = false;
@@ -77,13 +77,13 @@ class Interaction {
 		this.zoomDeltaY = 0;
 	}
 	
-	startPan = (x, y) => {
+	startPan = (x: number, y: number) => {
 		this.draggingPan = true;
 		this.panStartX = x;
 		this.panStartY = y;
 	}
 	
-	updatePan = (x, y) => {
+	updatePan = (x: number, y: number) => {
 		this.panDeltaX = x - this.panStartX;
 		this.panDeltaY = y - this.panStartY;
 		
@@ -112,7 +112,7 @@ class Interaction {
 		this.panDeltaY = 0;
 	}
 	
-	handleMouseDown = e => {
+	handleMouseDown = (e: MouseEvent) => {
 		e.preventDefault();
 		
 		let x = e.offsetX;
@@ -150,7 +150,7 @@ class Interaction {
 		this.updateCursor();
 	}
 	
-	handleMouseUp = e => {
+	handleMouseUp = (e: MouseEvent) => {
 		let x = e.offsetX;
 		let y = e.offsetY;
 		
@@ -165,7 +165,7 @@ class Interaction {
 		this.updateCursor();
 	}
 	
-	handleMouseMove = e => {
+	handleMouseMove = (e: MouseEvent) => {
 		const x = e.offsetX;
 		const y = e.offsetY;
 		
@@ -185,7 +185,7 @@ class Interaction {
 		}
 	}
 
-	handleWheel = e => {
+	handleWheel = (e: WheelEvent) => {
 		e.preventDefault();
 		
 		// Zoom in
@@ -201,7 +201,7 @@ class Interaction {
 		this.updateCursor();
 	}
 
-	handleKeydown = e => {
+	handleKeydown = (e: KeyboardEvent) => {
 		const k = e.key;
 
 		if(k === 'Escape') {
@@ -222,7 +222,7 @@ class Interaction {
 		this.plot.viewport.findUnderMouse(null, null);
 	}
 	
-	handleKeyup = e => {
+	handleKeyup = (e: KeyboardEvent) => {
 		const k = e.key;
 		
 		if(k === 'Shift') {

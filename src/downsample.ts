@@ -1,3 +1,5 @@
+import { IPoint } from './data';
+
 const floor = Math.floor;
 const abs = Math.abs;
 
@@ -5,7 +7,7 @@ const abs = Math.abs;
  * Courtesy of Sveinn Steinarsson, original implementation here:
  * https://github.com/sveinn-steinarsson/flot-downsample
  */
-function largestTriangleThreeBuckets(data, threshold) {
+function largestTriangleThreeBuckets(data: any, threshold: any) {
 
     var data_length = data.length;
     if (threshold >= data_length || threshold === 0) {
@@ -82,6 +84,6 @@ function largestTriangleThreeBuckets(data, threshold) {
  * @param {number} threshold Downsample to
  * @return {void}
  */
-const downsample = (data, threshold) => largestTriangleThreeBuckets(data, threshold);
+const downsample = (data: IPoint[], threshold: number) => largestTriangleThreeBuckets(data, threshold);
 
 export default downsample;

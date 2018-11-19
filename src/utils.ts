@@ -18,7 +18,7 @@ export const numDigits = (x: number) => {
  * @param {*} x Number to round
  * @param {*} n Digits to round to
  */
-export const round = (x, n) => {
+export const round = (x: number, n: number) => {
 	if (typeof n != 'number')
 		n = numDigits(x) - 1;
 	let roundTo = Math.pow(10, n);

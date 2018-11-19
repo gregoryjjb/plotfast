@@ -3,7 +3,7 @@ import downsample from './downsample';
 import canvas from './canvas';
 import Viewport from './viewport';
 import Interaction from './interaction';
-import Data from './data';
+import Data, { IPoint } from './data';
 import Events from './events';
 
 export interface IPlot {
@@ -11,25 +11,16 @@ export interface IPlot {
 	containerRef?: HTMLElement,
 	canvas?: HTMLCanvasElement,
 	events?: Events,
-	viewport?: any,
-	interaction?: any,
-	data?: any,
+	viewport?: Viewport,
+	interaction?: Interaction,
+	data?: Data,
 }
 
 class Plotfast {
 	
 	plot: IPlot = {};
 	
-	addEventListener: any;
-	addDataset: any;
-	updateDataset: any;
-	removeDataset: any;
-	fitViewToData: any;
-	start: any;
-	render: any;
-	downsample: any;
-	
-	constructor(containerEl, opts: IOptionsParams = {}) {
+	constructor(containerEl: HTMLElement, opts: IOptionsParams = {}) {
 		
 		const plot = this.plot;
 		
@@ -40,31 +31,30 @@ class Plotfast {
 		plot.viewport = new Viewport(plot);
 		plot.interaction = new Interaction(plot);
 		plot.data = new Data(plot);
-		
-		this.addEventListener = (name, callback) => this.plot.events.addListener(name, callback);
-		this.addDataset = (data, options) => this.plot.data.addDataset(data, options);
-		this.updateDataset = (id, data) => this.plot.data.updateDataset(id, data);
-		this.removeDataset = index => this.plot.data.removeDataset(index);
-		
-		this.fitViewToData = () => this.plot.viewport.fit();
-		
-		this.start = () => {
-			this.plot.viewport.fit();
-			this.plot.data.updateDownsampling();
-			this.plot.viewport.start();
-		}
-		
-		this.render = () => {
-			this.plot.viewport.render();
-		}
-		
-		this.downsample = (d, n) => downsample(d, n);
 	}
 	
-	//addEventListener = (name, callback) => this.plot.events.addListener(name, callback);
+	addEventListener = (name: string, callback: Function) => this.plot.events.addListener(name, callback);
 	
-	generateData(amount = 500) {
-		let data = [{x: 0, y: 0}];
+	addDataset = (data: IPoint[], options: any) => this.plot.data.addDataset(data, options);
+	
+	updateDataset = (id: string, data: IPoint[]) => this.plot.data.updateDataset(id, data);
+	
+	removeDataset = (index: number) => this.plot.data.removeDataset(index);
+	
+	fitViewToData = () => this.plot.viewport.fit();
+	
+	start = () => {
+		this.plot.viewport.fit();
+		this.plot.data.updateDownsampling();
+		this.plot.viewport.start();
+	}
+	
+	render = () => this.plot.viewport.render();
+	
+	downsample = (d: IPoint[], n: number) => downsample(d, n);
+	
+	generateData(amount = 500): IPoint[] {
+		let data: IPoint[] = [{x: 0, y: 0}];
 		for(let i = 1; i < amount; i++) {
 			data.push({
 				x: i / 3,
@@ -73,12 +63,6 @@ class Plotfast {
 		}
 		return data;
 	}
-	
-	
-	
-	 // processData(d, n)
-	
-	//takeSnapshot = () => this.plot.viewport.takeSnapshot();
 }
 
 export default Plotfast;

@@ -1,10 +1,14 @@
 import { IPlot } from './Plotfast';
 
+interface IListeners {
+    [key: string]: Array<Function>,
+}
+
 class Events {
     plot: IPlot;
-    listeners: any;
+    listeners: IListeners;
     
-    constructor(plot) {
+    constructor(plot: IPlot) {
         this.plot = plot;
 
         this.listeners = {
@@ -17,7 +21,7 @@ class Events {
      * @param {string} name Name of the event to listen to
      * @param {function} callback Event callback
      */
-    addListener = (name: string, callback) => {
+    addListener = (name: string, callback: Function) => {
         if(!name || typeof name !== 'string') {
             throw new Error('Name of event must be a string');
         }
@@ -31,7 +35,7 @@ class Events {
         this.listeners[name].push(callback);
     }
     
-    fireEvent = (name, args) => {
+    fireEvent = (name: string, args: any) => {
         let l = this.listeners[name];
         
         if(!Array.isArray(l)) return;
