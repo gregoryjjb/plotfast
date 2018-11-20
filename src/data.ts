@@ -1,6 +1,7 @@
 import { IPlot } from './Plotfast'
 import downsample from './downsample';
 import { clamp } from './utils';
+import { createDatasetOptions, IDatasetOptions, IDatasetOptionsParams } from './options';
 
 const defaultOptions: IDatasetOptions = {
 	name: 'Dataset',
@@ -11,14 +12,6 @@ export interface IPoint {
 	x: number,
 	y: number,
 }
-
-interface IDatasetOptions {
-	name: string,
-	downsample?: boolean,
-	color: string,
-}
-
-interface IDatasetOptionsParams extends Partial<IDatasetOptions> {};
 
 interface IDataset extends IDatasetOptions {
 	data: IPoint[],
@@ -243,18 +236,19 @@ class Data {
 			return 0;
 		});
 		
+		const opts = createDatasetOptions(options);
+		
 		// Get default downsample option from global options
-		if(options.downsample === undefined) {
-			options.downsample = this.plot.options.downsample;
+		if(opts.downsample === undefined) {
+			opts.downsample = this.plot.options.downsample;
 		}
 		
-		let downsampledData = options.downsample ? this.downsampleSet(data, data[0].x, data[data.length - 1].x) : data;
+		let downsampledData = opts.downsample ? this.downsampleSet(data, data[0].x, data[data.length - 1].x) : data;
 		
 		this.sets.push({
 			data,
 			downsampledData,
-			...defaultOptions,
-			...options,
+			...opts,
 		});
 	}
 	
@@ -265,7 +259,7 @@ class Data {
 	 * @param {number} data[].x X coordinate of point
 	 * @param {number} data[].y Y coordinate of point
 	 */
-	updateDataset = (id: string | number, data: IPoint[]) => {
+	updateDataset = (id: string | number, data: IPoint[]): void => {
 		if(id === undefined) return;
 		if(typeof id !== 'number') return;
 		if(id < 0 || id >= this.sets.length) return;

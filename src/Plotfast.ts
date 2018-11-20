@@ -1,4 +1,4 @@
-import { createOptions, IOptions, IOptionsParams } from './options';
+import { createPlotOptions, IPlotOptions, IPlotOptionsParams } from './options';
 import downsample from './downsample';
 import canvas from './canvas';
 import Viewport from './viewport';
@@ -7,7 +7,7 @@ import Data, { IPoint } from './data';
 import Events from './events';
 
 export interface IPlot {
-	options?: IOptions,
+	options?: IPlotOptions,
 	containerRef?: HTMLElement,
 	canvas?: HTMLCanvasElement,
 	events?: Events,
@@ -20,11 +20,11 @@ class Plotfast {
 	
 	plot: IPlot = {};
 	
-	constructor(containerEl: HTMLElement, opts: IOptionsParams = {}) {
+	constructor(containerEl: HTMLElement, opts: IPlotOptionsParams = {}) {
 		
 		const plot = this.plot;
 		
-		plot.options = createOptions(opts);
+		plot.options = createPlotOptions(opts);
 		plot.containerRef = containerEl;
 		plot.canvas = canvas(containerEl, plot.options.width, plot.options.height);
 		plot.events = new Events(plot);

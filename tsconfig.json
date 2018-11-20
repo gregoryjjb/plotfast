@@ -9,4 +9,8 @@
         "target": "es5",
         "allowJs": true
     },
+    "files": [
+        "src/index.d.ts",
+        "src/index.ts"
+    ]
 }
