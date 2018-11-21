@@ -1,7 +1,5 @@
 {
-    "include": [
-        "src/**/*"
-    ],
+    "include": ["src/**/*"],
     "compilerOptions": {
         "outDir": "./dist/",
         "noImplicitAny": true,
@@ -9,8 +7,5 @@
         "target": "es5",
         "allowJs": true
     },
-    "files": [
-        "src/index.d.ts",
-        "src/index.ts"
-    ]
+    "files": ["src/index.d.ts", "src/index.ts"]
 }
