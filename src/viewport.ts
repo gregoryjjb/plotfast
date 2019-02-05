@@ -1,9 +1,9 @@
-import utils from './utils';
-//import fullscreenImgSrc from '../img/baseline-fullscreen-24px.svg';
-//import cameraImgSrc from '../img/outline-camera_alt-24px.svg';
+const fullscreenImgSrc = require('../img/baseline-fullscreen-24px.svg');
+const cameraImgSrc =  require('../img/outline-camera_alt-24px.svg');
 
 import { IPlot } from './Plotfast';
 import { IPoint } from './data';
+import { IDataset, EPlotType } from './options';
 
 class Viewport {
     plot: IPlot;
@@ -58,10 +58,10 @@ class Viewport {
         this.plot = plot;
 
         this.fullscreenImg = new Image();
-        //this.fullscreenImg.src = fullscreenImgSrc;
+        this.fullscreenImg.src = fullscreenImgSrc;
 
         this.cameraImg = new Image();
-        //this.cameraImg.src = cameraImgSrc;
+        this.cameraImg.src = cameraImgSrc;
 
         window.addEventListener('resize', e => {
             if (this.fullscreen === false || !this.plot.canvas) return;
@@ -379,6 +379,97 @@ class Viewport {
         }
     };
 
+    drawLinePlot = (set: IDataset, ctx: CanvasRenderingContext2D): number => {
+        let data = set.downsampledData;
+        let nPoints = 0;
+
+        let inLine = false;
+
+        ctx.strokeStyle = set.color || 'black';
+
+        ctx.beginPath();
+
+        for (let i = 0; i < data.length; i++) {
+            let d = data[i];
+
+            if (
+                d.x >= this.minX &&
+                d.x <= this.maxX &&
+                d.y >= this.minY &&
+                d.y <= this.maxY
+            ) {
+                // We are in the visible area, draw the point
+                nPoints++;
+
+                let dx = this.dataToScreenX(d.x);
+                let dy = this.dataToScreenY(d.y);
+
+                // If in line already, continue it
+                if (inLine) {
+                    ctx.lineTo(dx, dy);
+                }
+                // Otherwise we may have to start a new segment
+                else {
+                    let prev = data[i - 1];
+
+                    if (prev) {
+                        // Connecting line to the previous off-screen point
+                        let px = this.dataToScreenX(prev.x);
+                        let py = this.dataToScreenY(prev.y);
+                        ctx.moveTo(px, py);
+                        ctx.lineTo(dx, dy);
+                    } else {
+                        // New standalone point with no previous
+                        ctx.moveTo(dx, dy);
+                    }
+
+                    inLine = true;
+                }
+            } else {
+                if (inLine) {
+                    // We just went off the edge of the screen, draw this last point
+                    let dx = this.dataToScreenX(d.x);
+                    let dy = this.dataToScreenY(d.y);
+
+                    ctx.lineTo(dx, dy);
+                }
+
+                inLine = false;
+            }
+        }
+
+        ctx.stroke();
+
+        return nPoints;
+    }
+
+    drawPointPlot = (set: IDataset, ctx: CanvasRenderingContext2D): number => {
+        let nPoints = 0;
+
+        let start = this.plot.data.binarySearch(set.downsampledData, this.minX, 1);
+        let end = this.plot.data.binarySearch(set.downsampledData, this.maxX, -1);
+
+        ctx.fillStyle = set.color || 'black';
+
+        for(let i = start; i < end; i++) {
+            let d = set.downsampledData[i];
+
+            nPoints++;
+
+            let dx = this.dataToScreenX(d.x);
+            let dy = this.dataToScreenY(d.y);
+
+            ctx.fillRect(dx - 2, dy - 2, 4, 4);
+
+            // Actual circles are incredibly slow
+            //ctx.moveTo(dx, dy);
+            //ctx.arc(dx, dy, 2, 0, Math.PI * 2);
+            //ctx.fill();
+        }
+
+        return nPoints;
+    }
+
     render = () => {
         this._updateCalculations();
 
@@ -417,63 +508,15 @@ class Viewport {
 
         for (let j = 0; j < datasets.length; j++) {
             let set = datasets[j];
-            let data = set.downsampledData;
-            let inLine = false;
 
-            ctx.strokeStyle = set.color || 'black';
+            console.log('THE SET TYPE IS', set.type);
 
-            ctx.beginPath();
-
-            for (let i = 0; i < data.length; i++) {
-                let d = data[i];
-
-                if (
-                    d.x >= this.minX &&
-                    d.x <= this.maxX &&
-                    d.y >= this.minY &&
-                    d.y <= this.maxY
-                ) {
-                    // We are in the visible area, draw the point
-                    nPoints++;
-
-                    let dx = this.dataToScreenX(d.x);
-                    let dy = this.dataToScreenY(d.y);
-
-                    // If in line already, continue it
-                    if (inLine) {
-                        ctx.lineTo(dx, dy);
-                    }
-                    // Otherwise we may have to start a new segment
-                    else {
-                        let prev = data[i - 1];
-
-                        if (prev) {
-                            // Connecting line to the previous off-screen point
-                            let px = this.dataToScreenX(prev.x);
-                            let py = this.dataToScreenY(prev.y);
-                            ctx.moveTo(px, py);
-                            ctx.lineTo(dx, dy);
-                        } else {
-                            // New standalone point with no previous
-                            ctx.moveTo(dx, dy);
-                        }
-
-                        inLine = true;
-                    }
-                } else {
-                    if (inLine) {
-                        // We just went off the edge of the screen, draw this last point
-                        let dx = this.dataToScreenX(d.x);
-                        let dy = this.dataToScreenY(d.y);
-
-                        ctx.lineTo(dx, dy);
-                    }
-
-                    inLine = false;
-                }
+            if(set.type === EPlotType.Line) {
+                nPoints += this.drawLinePlot(set, ctx);
             }
-
-            ctx.stroke();
+            else if(set.type === EPlotType.Point) {
+                nPoints += this.drawPointPlot(set, ctx);
+            }
         }
 
         if (DEBUG) {

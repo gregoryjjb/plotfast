@@ -35,10 +35,16 @@ export const createPlotOptions = (opts: IPlotOptionsParams): IPlotOptions => {
     };
 };
 
+export enum EPlotType {
+    Line = 'line',
+    Point = 'point',
+}
+
 export interface IDatasetOptions {
     name: string;
     downsample?: boolean;
     color: string;
+    type: EPlotType,
 }
 
 export interface IDatasetOptionsParams extends Partial<IDatasetOptions> {}
@@ -46,6 +52,7 @@ export interface IDatasetOptionsParams extends Partial<IDatasetOptions> {}
 const defaultDatasetOptions: IDatasetOptions = {
     name: 'Dataset',
     color: 'black',
+    type: EPlotType.Line,
 };
 
 export const createDatasetOptions = (

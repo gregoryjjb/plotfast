@@ -7,11 +7,6 @@ import {
     IDatasetOptionsParams,
 } from './options';
 
-const defaultOptions: IDatasetOptions = {
-    name: 'Dataset',
-    color: 'black',
-};
-
 export interface IPoint {
     x: number;
     y: number;
