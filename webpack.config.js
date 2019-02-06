@@ -2,7 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 module.exports = (env, argv) => ({
-    entry: './src/index.ts',
+    entry: path.join(__dirname, 'src/index.ts'),
     module: {
         rules: [
             {
@@ -31,14 +31,15 @@ module.exports = (env, argv) => ({
         extensions: ['.tsx', '.ts', '.js'],
     },
     output: {
-        filename: 'main.js',
+        filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
         library: 'Plotfast',
+        libraryTarget: 'umd',
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './index.html',
-            filename: './dist/index.html',
+            template: path.join(__dirname, 'index.html'),
+            filename: './index.html',
         }),
     ],
     //devServer: {

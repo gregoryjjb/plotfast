@@ -2,10 +2,12 @@
     "include": ["src/**/*"],
     "compilerOptions": {
         "outDir": "./dist/",
-        "noImplicitAny": true,
-        "module": "es6",
         "target": "es5",
-        "allowJs": true
+        "declaration": true,
+        "jsx": "react",
+        "lib": ["dom", "es2015"],
+        "module": "commonjs",
+        
     },
     "files": ["src/index.d.ts", "src/index.ts"]
 }
