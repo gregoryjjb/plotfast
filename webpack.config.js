@@ -21,10 +21,10 @@ module.exports = (env, argv) => ({
                 test: /\.(png|svg|jpg|gif)$/,
                 use: ['file-loader'],
             },
-            {
-                test: /\.html?$/,
-                loader: 'file-loader?name=[name].[ext]',
-            },
+            //{
+            //    test: /\.html?$/,
+            //    loader: 'file-loader?name=[name].[ext]',
+            //},
         ],
     },
     resolve: {
@@ -32,7 +32,7 @@ module.exports = (env, argv) => ({
     },
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'umd'),
         library: 'Plotfast',
         libraryTarget: 'umd',
     },

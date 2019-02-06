@@ -2,11 +2,13 @@
     "include": ["src/**/*"],
     "compilerOptions": {
         "outDir": "./dist/",
-        "target": "es5",
+        "target": "es6",
         "declaration": true,
         "jsx": "react",
         "lib": ["dom", "es2015"],
         "module": "commonjs",
+        "allowSyntheticDefaultImports": true,
+        "moduleResolution": "node"
         
     },
     "files": ["src/index.d.ts", "src/index.ts"]

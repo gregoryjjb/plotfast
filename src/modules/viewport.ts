@@ -1,9 +1,9 @@
-const fullscreenImgSrc = require('../img/baseline-fullscreen-24px.svg');
-const cameraImgSrc =  require('../img/outline-camera_alt-24px.svg');
+const fullscreenImgSrc = require('../../img/baseline-fullscreen-24px.svg');
+const cameraImgSrc =  require('../../img/outline-camera_alt-24px.svg');
 
-import { IPlot } from './Plotfast';
-import { IPoint } from './data';
-import { IDataset, EPlotType } from './options';
+import { IPlot } from '../Plotfast';
+import { IPoint } from '../data';
+import { IDataset, EPlotType } from '../options';
 
 class Viewport {
     plot: IPlot;

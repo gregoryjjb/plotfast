@@ -1,7 +1,7 @@
 import { createPlotOptions, IPlotOptions, IPlotOptionsParams } from './options';
 import downsample from './downsample';
 import canvas from './canvas';
-import Viewport from './viewport';
+import Viewport from './modules/viewport';
 import Interaction from './interaction';
 import Data, { IPoint } from './data';
 import Events from './events';

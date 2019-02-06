@@ -5,25 +5,30 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "unpkg": "dist/bundle.js",
-    "files": ["dist"],
+    "files": [
+        "dist"
+    ],
     "author": "Greg Brisebois",
     "license": "MIT",
     "private": false,
     "scripts": {
         "start": "webpack-dev-server --inline --hot --mode development",
         "clean": "shx rm -rf dist",
-        "build": "npm run clean && tsc && webpack --mode production",
+        "build": "npm run clean && tsc",
         "pretty": "prettier --write \"**/*.{ts,js,json}\""
     },
     "devDependencies": {
         "@babel/core": "^7.0.0",
         "@babel/preset-env": "^7.0.0",
         "@types/node": "^10.12.9",
+        "@types/react": "^16.8.1",
         "babel-loader": "^8.0.0",
         "babel-plugin-transform-class-properties": "^6.24.1",
         "file-loader": "^2.0.0",
         "html-webpack-plugin": "^3.2.0",
         "prettier": "^1.15.2",
+        "react": "^16.7.0",
+        "react-dom": "^16.7.0",
         "shx": "^0.3.2",
         "ts-loader": "^5.3.0",
         "typescript": "^3.1.6",
