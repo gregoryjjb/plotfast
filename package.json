@@ -2,26 +2,34 @@
   "name": "plotfast",
   "version": "0.0.0",
   "description": "High performance plotting",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "author": "Greg Brisebois",
   "license": "MIT",
   "private": false,
   "scripts": {
     "start": "webpack-dev-server --inline --hot --mode development",
-    "build": "webpack --mode production --env prod"
+    "build": "babel src -d dist --copy-files"
   },
   "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "file-loader": "^2.0.0",
     "html-webpack-plugin": "^3.2.0",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
     "webpack": "^4.17.1",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.8"
+    "webpack-dev-server": "^3.1.8",
+    "babel-loader": "^8.0.0"
   },
   "dependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "babel-loader": "^8.0.0",
     "downsample-lttb": "^0.0.1"
+  },
+  "peerDependencies": {
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1"
   }
 }

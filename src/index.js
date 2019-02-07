@@ -1,3 +1,6 @@
-const Plotfast = require('./Plotfast').default;
+//const Plotfast = require('./Plotfast').default;
+//module.exports = Plotfast;
 
-module.exports = Plotfast;
+export { default } from './Plotfast';
+
+export { default as PlotfastReact } from './PlotfastReact';

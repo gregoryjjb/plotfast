@@ -1,6 +1,8 @@
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, argv) => ({
+	entry: path.join(__dirname, 'examples/index.js'),
 	module: {
 		rules: [
 			{
@@ -16,10 +18,10 @@ module.exports = (env, argv) => ({
 					'file-loader'
 				]
 			},
-			{
-				test: /\.html?$/,
-				loader: "file-loader?name=[name].[ext]"
-			},
+			//{
+			//	test: /\.html?$/,
+			//	loader: "file-loader?name=[name].[ext]"
+			//},
 		]
 	},
 	output: {
@@ -27,8 +29,8 @@ module.exports = (env, argv) => ({
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
-			template: './index.html',
-			filename: './dist/index.html',
+			template: path.join(__dirname, 'examples/index.html'),
+			filename: './index.html',
 		}),
 	],
 	//devServer: {
