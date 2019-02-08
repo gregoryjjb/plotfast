@@ -11,18 +11,23 @@ function getRandomColor() {
     return color;
 }
 
-var container = document.getElementById("container");
-var plot = new Plotfast(container, { logging: true, width: 640, height: 480, downsample: true });
+var container = document.getElementById('container');
+var plot = new Plotfast(container, {
+    logging: true,
+    width: 640,
+    height: 480,
+    downsample: true,
+});
 var data = plot.generateData(1000000);
-plot.addDataset(data,  { color: getRandomColor(), type: 'point' });
+plot.addDataset(data, { color: getRandomColor(), type: 'line' });
 plot.start();
 
-document.querySelector("#generate").addEventListener("click", function(e) {
-    plot.addDataset(plot.generateData(1000000), { color: getRandomColor() })
+document.querySelector('#generate').addEventListener('click', function(e) {
+    plot.addDataset(plot.generateData(1000000), { color: getRandomColor() });
     plot.fitViewToData();
 });
 
-document.querySelector("#clear").addEventListener("click", function(e) {
+document.querySelector('#clear').addEventListener('click', function(e) {
     plot.removeDataset();
 });
 
@@ -34,7 +39,6 @@ plot.addEventListener('viewMoved', e => {
     //console.log("Decimate to", dec)
     //let newData = down(data, e.x1, e.x2, dec);
     //plot.updateDataset(0, newData);
-})
+});
 
 window.plot = plot;
-

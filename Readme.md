@@ -6,11 +6,9 @@ Canvas plotting library focused on performance.
 
 ## Usage
 
-Once it goes on npm:
+`npm install plotfast` or `yarn add plotfast`
 
-`npm install plotfast` or `yarn install plotfast`
-
-Or include the script and it'll expose the `Plotfast` global.
+Or include the `plotfast.min.js` script and it'll expose the `Plotfast` global.
 
 Then, in your HTML:
 
@@ -23,7 +21,7 @@ And initialize the plot in JS:
 ```javascript
 // Plot will be inserted into this div,
 // canvas creation handled automatically
-var container = document.getElementById("container");
+var container = document.getElementById('container');
 
 // Create the plot
 var plot = new Plotfast(container);
@@ -36,6 +34,21 @@ plot.addDataset(data);
 
 // Start rendering the plot
 plot.start();
+```
+
+Or use the React component (in beta):
+
+```javascript
+import { Plot } from 'plotfast/react';
+
+const data = generateMyData();
+
+const MyPlot = () => (
+    <Plot
+        options={{ logging: true }}
+        datasets={{ data, options: { type: 'line' } }}
+    />
+);
 ```
 
 ## Features
@@ -70,20 +83,20 @@ plot.removeDataset();
 ```javascript
 var plot = new Plotfast(container, {
     logging: true,
-    
+
     // Dimensions of the canvas
     width: 640,
     height: 480,
-    
+
     // Labels to display on the axes
     xLabel: 'X axis',
     yLabel: 'Y axis',
-    
+
     // Colors
     lineColor: 'lightgrey',
     textColor: 'black',
     backgroundColor: 'none',
-    
+
     // Downsample data to improve performance
     downsample: true,
 });
@@ -92,15 +105,15 @@ var plot = new Plotfast(container, {
 ### Data Options
 
 ```javascript
-var data = [{x: 1, y: 0}, {x: 2, y: 5}];
+var data = [{ x: 1, y: 0 }, { x: 2, y: 5 }];
 
 plot.addDataset(data, {
     name: 'Dataset',
     color: 'black',
-    
+
     // Will match the plot's downsample setting by default
     downsample: true,
-})
+});
 ```
 
 ### Events
@@ -119,8 +132,14 @@ plot.addEventListener('viewMoved', event => {
 2. Start the development server with `yarn start`
 3. Create a production build with `yarn build`
 
+## Future Plans
+
+-   Flesh out plot customization/types
+-   In `Plot` React component, all normal Plotfast functionality should be exposed
+-   Try using WebAssembly to speed up plot downsampling/rendering
+
 ## Credit
 
-Downsampling algorithm provided by Sveinn Steinarsson's [Largest Triangle Three Buckets Algorithm](https://github.com/sveinn-steinarsson/flot-downsample).
+Default downsampling algorithm provided by Sveinn Steinarsson's [Largest Triangle Three Buckets Algorithm](https://github.com/sveinn-steinarsson/flot-downsample).
 
 Icons are from Google's [Material Icons](https://material.io/tools/icons/?style=baseline).

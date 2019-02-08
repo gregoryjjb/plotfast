@@ -1,50 +1,40 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
-module.exports = (env, argv) => ({
-    entry: env === 'production' ? path.join(__dirname, 'src/index.js') : path.join(__dirname, 'examples/index.js'),
-    module: {
-        rules: [
-            {
-                test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
-            },
-            /*{
-				test: /\.js$/,
-				exclude: /node_modules/,
-				use: {
-					loader: "babel-loader"
-				}
-			},*/
-            {
-                test: /\.(png|svg|jpg|gif)$/,
-                use: ['file-loader'],
-            },
-            //{
-            //    test: /\.html?$/,
-            //    loader: 'file-loader?name=[name].[ext]',
-            //},
+module.exports = (env, argv) => {
+    return {
+        entry:
+            argv.mode === 'production'
+                ? path.join(__dirname, 'src/index.ts')
+                : path.join(__dirname, 'src/index.ts'), // Example
+        module: {
+            rules: [
+                {
+                    test: /\.tsx?$/,
+                    use: 'ts-loader',
+                    exclude: /node_modules/,
+                },
+                {
+                    test: /\.(png|svg|jpg|gif)$/,
+                    use: ['file-loader'],
+                },
+            ],
+        },
+        resolve: {
+            extensions: ['.tsx', '.ts', '.js'],
+        },
+        output: {
+            filename: 'plotfast.min.js',
+            path: path.resolve(__dirname, 'min'),
+            library: 'Plotfast',
+            libraryExport: 'default',
+        },
+        plugins: [
+            new HtmlWebpackPlugin({
+                template: path.join(__dirname, 'examples/index.html'),
+                filename: './index.html',
+                inject: 'head',
+            }),
         ],
-    },
-    resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
-    },
-    output: {
-        filename: 'bundle.js',
-        path: path.resolve(__dirname, 'umd'),
-        library: 'Plotfast',
-        //libraryTarget: 'umd',
-    },
-    plugins: [
-        new HtmlWebpackPlugin({
-            template: path.join(__dirname, 'examples/index.html'),
-            filename: './index.html',
-        }),
-    ],
-    //devServer: {
-    //	historyApiFallback: {
-    //		index: 'index.html'
-    //	}
-    //}
-});
+    };
+};

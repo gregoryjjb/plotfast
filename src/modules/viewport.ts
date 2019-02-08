@@ -1,9 +1,9 @@
 const fullscreenImgSrc = require('../../img/baseline-fullscreen-24px.svg');
-const cameraImgSrc =  require('../../img/outline-camera_alt-24px.svg');
+const cameraImgSrc = require('../../img/outline-camera_alt-24px.svg');
 
 import { IPlot } from '../Plotfast';
-import { IPoint } from '../data';
-import { IDataset, EPlotType } from '../options';
+import { IPoint } from './Data';
+import { IDataset, EPlotType } from '../utils/options';
 
 class Viewport {
     plot: IPlot;
@@ -441,17 +441,25 @@ class Viewport {
         ctx.stroke();
 
         return nPoints;
-    }
+    };
 
     drawPointPlot = (set: IDataset, ctx: CanvasRenderingContext2D): number => {
         let nPoints = 0;
 
-        let start = this.plot.data.binarySearch(set.downsampledData, this.minX, 1);
-        let end = this.plot.data.binarySearch(set.downsampledData, this.maxX, -1);
+        let start = this.plot.data.binarySearch(
+            set.downsampledData,
+            this.minX,
+            1,
+        );
+        let end = this.plot.data.binarySearch(
+            set.downsampledData,
+            this.maxX,
+            -1,
+        );
 
         ctx.fillStyle = set.color || 'black';
 
-        for(let i = start; i < end; i++) {
+        for (let i = start; i < end; i++) {
             let d = set.downsampledData[i];
 
             nPoints++;
@@ -468,7 +476,7 @@ class Viewport {
         }
 
         return nPoints;
-    }
+    };
 
     render = () => {
         this._updateCalculations();
@@ -509,12 +517,9 @@ class Viewport {
         for (let j = 0; j < datasets.length; j++) {
             let set = datasets[j];
 
-            console.log('THE SET TYPE IS', set.type);
-
-            if(set.type === EPlotType.Line) {
+            if (set.type === EPlotType.Line) {
                 nPoints += this.drawLinePlot(set, ctx);
-            }
-            else if(set.type === EPlotType.Point) {
+            } else if (set.type === EPlotType.Point) {
                 nPoints += this.drawPointPlot(set, ctx);
             }
         }
@@ -535,7 +540,7 @@ class Viewport {
         }
 
         // Clear out margins in case of data hanging off the edge
-        this._clearRect(ctx, 0, 0, canvas.width, this.paddingTop);
+        this._clearRect(ctx, 0, -1, canvas.width, this.paddingTop);
         this._clearRect(ctx, 0, 0, this.paddingLeft, canvas.height);
         this._clearRect(
             ctx,

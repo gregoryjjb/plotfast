@@ -1,10 +1,15 @@
-import { createPlotOptions, IPlotOptions, IPlotOptionsParams } from './options';
-import downsample from './downsample';
-import canvas from './canvas';
-import Viewport from './modules/viewport';
-import Interaction from './interaction';
-import Data, { IPoint } from './data';
-import Events from './events';
+import {
+    createPlotOptions,
+    IPlotOptions,
+    IPlotOptionsParams,
+} from './utils/options';
+import downsample from './utils/downsample';
+import canvas from './utils/canvas';
+
+import Viewport from './modules/Viewport';
+import Interaction from './modules/Interaction';
+import Data, { IPoint } from './modules/Data';
+import Events from './modules/Events';
 
 export interface IPlot {
     options?: IPlotOptions;

@@ -1,4 +1,4 @@
-import { IPoint } from './data';
+import { IPoint } from '../modules/Data';
 
 const floor = Math.floor;
 const abs = Math.abs;

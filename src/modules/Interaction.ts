@@ -1,5 +1,5 @@
-import { IPlot } from './Plotfast';
-import { benchmark } from './utils';
+import { IPlot } from '../Plotfast';
+import { benchmark } from '../utils';
 
 class Interaction {
     plot: IPlot;

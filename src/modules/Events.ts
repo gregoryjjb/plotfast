@@ -1,4 +1,4 @@
-import { IPlot } from './Plotfast';
+import { IPlot } from '../Plotfast';
 
 interface IListeners {
     [key: string]: Array<Function>;

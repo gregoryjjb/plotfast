@@ -1,22 +1,24 @@
 {
     "name": "plotfast",
     "version": "0.0.0",
-    "description": "High performance plotting",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "unpkg": "dist/bundle.js",
-    "files": [
-        "dist"
-    ],
+    "description": "High performance data plotting with Canvas",
     "author": "Greg Brisebois",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/gregoryjjb/plotfast.git"
+    },
     "private": false,
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "scripts": {
         "start": "webpack-dev-server --inline --hot --mode development",
-        "clean": "shx rm -rf dist",
-        "build": "npm run clean && tsc",
+        "clean": "shx rm -rf dist && shx rm -rf min",
+        "transpile": "tsc",
         "pack": "webpack --mode production",
-        "pretty": "prettier --write \"**/*.{ts,js,json}\""
+        "build": "npm run clean && npm run transpile && npm run pack",
+        "pretty": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\"",
+        "prepublishOnly": "npm run build"
     },
     "devDependencies": {
         "@babel/core": "^7.0.0",

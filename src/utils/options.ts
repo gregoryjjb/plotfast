@@ -1,4 +1,4 @@
-import { IPoint } from './data';
+import { IPoint } from '../modules/Data';
 
 export interface IPlotOptions {
     logging: boolean;
@@ -44,7 +44,7 @@ export interface IDatasetOptions {
     name: string;
     downsample?: boolean;
     color: string;
-    type: EPlotType,
+    type: EPlotType;
 }
 
 export interface IDatasetOptionsParams extends Partial<IDatasetOptions> {}

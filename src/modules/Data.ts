@@ -1,11 +1,11 @@
-import { IPlot } from './Plotfast';
-import downsample from './downsample';
-import { clamp } from './utils';
+import { IPlot } from '../Plotfast';
+import downsample from '../utils/downsample';
+import { clamp } from '../utils';
 import {
     createDatasetOptions,
     IDatasetOptions,
     IDatasetOptionsParams,
-} from './options';
+} from '../utils/options';
 
 export interface IPoint {
     x: number;
