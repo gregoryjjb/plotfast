@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import Plotfast from '../Plotfast';
 
 class PlotfastReact extends React.Component {

@@ -15,6 +15,7 @@
         "start": "webpack-dev-server --inline --hot --mode development",
         "clean": "shx rm -rf dist",
         "build": "npm run clean && tsc",
+        "pack": "webpack --mode production",
         "pretty": "prettier --write \"**/*.{ts,js,json}\""
     },
     "devDependencies": {
@@ -38,5 +39,9 @@
     },
     "dependencies": {
         "downsample-lttb": "^0.0.1"
+    },
+    "peerDependencies": {
+        "react": "^16.7.0",
+        "react-dom": "^16.7.0"
     }
 }

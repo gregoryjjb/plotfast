@@ -2,7 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 module.exports = (env, argv) => ({
-    entry: path.join(__dirname, 'src/index.ts'),
+    entry: env === 'production' ? path.join(__dirname, 'src/index.js') : path.join(__dirname, 'examples/index.js'),
     module: {
         rules: [
             {
@@ -34,11 +34,11 @@ module.exports = (env, argv) => ({
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'umd'),
         library: 'Plotfast',
-        libraryTarget: 'umd',
+        //libraryTarget: 'umd',
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: path.join(__dirname, 'index.html'),
+            template: path.join(__dirname, 'examples/index.html'),
             filename: './index.html',
         }),
     ],
