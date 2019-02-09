@@ -1,5 +1,7 @@
 const readline = require('readline');
 
+throw new Error('Use `yarn run release`, not `npm publish` or `yarn publish`');
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
