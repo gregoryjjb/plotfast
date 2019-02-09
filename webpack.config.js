@@ -25,7 +25,7 @@ module.exports = (env, argv) => {
         },
         output: {
             filename: 'plotfast.min.js',
-            path: path.resolve(__dirname, 'min'),
+            path: path.resolve(__dirname, 'dist', 'min'),
             library: 'Plotfast',
             libraryExport: 'default',
         },

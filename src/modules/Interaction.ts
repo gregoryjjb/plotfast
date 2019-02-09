@@ -1,4 +1,4 @@
-import { IPlot } from '../Plotfast';
+import { IPlot } from './Plotfast';
 import { benchmark } from '../utils';
 
 class Interaction {

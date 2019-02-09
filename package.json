@@ -9,16 +9,17 @@
         "url": "https://github.com/gregoryjjb/plotfast.git"
     },
     "private": false,
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "index.js",
+    "types": "index.d.ts",
     "scripts": {
         "start": "webpack-dev-server --inline --hot --mode development",
-        "clean": "shx rm -rf dist && shx rm -rf min",
+        "clean": "shx rm -rf dist",
         "transpile": "tsc",
         "pack": "webpack --mode production",
-        "build": "npm run clean && npm run transpile && npm run pack",
+        "build": "npm run clean && npm run transpile && npm run pack && node scripts/package-copy.js",
         "pretty": "prettier --write \"**/*.{ts,tsx,js,jsx,json}\"",
-        "prepublishOnly": "npm run build"
+        "prepublishOnly": "node scripts/throw-error.js",
+        "release": "npm run build && npm publish dist"
     },
     "devDependencies": {
         "@babel/core": "^7.0.0",
@@ -29,6 +30,7 @@
         "babel-plugin-transform-class-properties": "^6.24.1",
         "file-loader": "^2.0.0",
         "html-webpack-plugin": "^3.2.0",
+        "ncp": "^2.0.0",
         "prettier": "^1.15.2",
         "react": "^16.7.0",
         "react-dom": "^16.7.0",

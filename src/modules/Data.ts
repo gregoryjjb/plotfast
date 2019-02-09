@@ -1,4 +1,4 @@
-import { IPlot } from '../Plotfast';
+import { IPlot } from './Plotfast';
 import downsample from '../utils/downsample';
 import { clamp } from '../utils';
 import {

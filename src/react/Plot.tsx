@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Plotfast from '../Plotfast';
+import Plotfast from '../modules/Plotfast';
 import { IPlotOptionsParams, IDatasetOptionsParams } from '../utils/options';
 import { IPoint } from '../modules/data';
 

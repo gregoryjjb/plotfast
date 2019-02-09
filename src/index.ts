@@ -1,1 +1,1 @@
-export { default } from './Plotfast';
+export { default } from './modules/Plotfast';
