@@ -30,7 +30,7 @@ export default function canvas(
 
     window.addEventListener('resize', () => {
         if (width === 'fill') c.width = getFillWidth();
-        if (height === 'fill') c.width = getFillHeight();
+        if (height === 'fill') c.height = getFillHeight();
     });
 
     return c;

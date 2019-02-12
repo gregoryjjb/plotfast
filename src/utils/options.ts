@@ -2,8 +2,8 @@ import { IPoint } from '../modules/Data';
 
 export interface IPlotOptions {
     logging: boolean;
-    width: number;
-    height: number;
+    width: number | 'fill';
+    height: number | 'fill';
     xLabel: string;
     yLabel: string;
     lineColor: string;

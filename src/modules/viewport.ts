@@ -183,8 +183,25 @@ class Viewport {
         canvas.style.right = 'unset';
         canvas.style.zIndex = 'unset';
 
-        canvas.width = options.width;
-        canvas.height = options.height;
+        // @TODO fix this mess, need to make canvas handler
+        canvas.width =
+            options.width === 'fill'
+                ? Number(
+                      getComputedStyle(this.plot.containerRef).width.replace(
+                          'px',
+                          '',
+                      ),
+                  )
+                : options.width;
+        canvas.height =
+            options.height === 'fill'
+                ? Number(
+                      getComputedStyle(this.plot.containerRef).height.replace(
+                          'px',
+                          '',
+                      ),
+                  )
+                : options.height;
 
         this.plot.containerRef.appendChild(canvas);
 
