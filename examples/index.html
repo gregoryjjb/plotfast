@@ -14,7 +14,7 @@
                 <li>Ctrl-click or scroll to zoom</li>
                 <li>Press F to fit</li>
             </ul>
-            <div id="container"></div>
+            <div id="container" style="width: 100%;"></div>
             <button id="generate">Generate Data</button>
             <button id="clear">Clear Data</button>
         </div>
@@ -33,7 +33,7 @@
             var container = document.getElementById('container');
             var plot = new Plotfast(container, {
                 logging: true,
-                width: 640,
+                width: 'fill',
                 height: 480,
                 downsample: true,
             });

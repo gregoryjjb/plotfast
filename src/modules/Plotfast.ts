@@ -43,6 +43,13 @@ class Plotfast {
     addEventListener = (name: string, callback: Function) =>
         this.plot.events.addListener(name, callback);
 
+    setOptions = (opts: IPlotOptionsParams) => {
+        this.plot.options = {
+            ...this.plot.options,
+            ...opts,
+        };
+    };
+
     addDataset = (data: IPoint[], options: any) =>
         this.plot.data.addDataset(data, options);
 

@@ -3,23 +3,30 @@ import Plotfast from '../modules/Plotfast';
 import { IPlotOptionsParams, IDatasetOptionsParams } from '../utils/options';
 import { IPoint } from '../modules/data';
 
-class Plot extends React.Component<{
+interface IPlotParams {
     options?: IPlotOptionsParams;
     datasets: {
         data: IPoint[];
         options: IDatasetOptionsParams;
-    };
-}> {
+    }[];
+}
+
+class Plot extends React.Component<IPlotParams> {
     containerRef: HTMLDivElement = null;
 
     componentDidMount() {
         let plot = new Plotfast(this.containerRef, this.props.options || {});
-        plot.addDataset(this.props.datasets.data, this.props.datasets.options);
+
+        this.props.datasets.forEach(dataset => {
+            plot.addDataset(dataset.data, dataset.options);
+        });
+
         plot.start();
     }
 
     render() {
-        return <div ref={r => (this.containerRef = r)} />;
+        let { options, datasets, ...props } = this.props;
+        return <div ref={r => (this.containerRef = r)} {...props} />;
     }
 }
 
