@@ -1,6 +1,6 @@
 {
     "name": "plotfast",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "High performance data plotting with Canvas",
     "author": "Greg Brisebois",
     "license": "MIT",
