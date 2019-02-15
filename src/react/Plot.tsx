@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Plotfast from '../modules/Plotfast';
 import { IPlotOptionsParams, IDatasetOptionsParams } from '../utils/options';
-import { IPoint } from '../modules/data';
+import { IPoint } from '../modules/Data';
 
 interface IPlotParams {
     options?: IPlotOptionsParams;
